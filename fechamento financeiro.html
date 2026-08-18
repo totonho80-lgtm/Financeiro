@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fechamento Financeiro · Ervas &amp; Bebidas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --ink:#1C2333;
+  --ink-2:#2A3145;
+  --parchment:#F7F4EC;
+  --paper:#FFFFFF;
+  --line:#E4DFD2;
+  --text:#2A2E35;
+  --muted:#767B85;
+  --erva:#2E6B3E;
+  --erva-bg:#E9F3EA;
+  --bebida:#1B5FA8;
+  --bebida-bg:#E9F1FB;
+  --atraso:#B23A2E;
+  --atraso-bg:#FBEBE9;
+  --aberto:#B8860B;
+  --aberto-bg:#FBF3E1;
+  --pago:#3D7A4F;
+  --naoclass:#8B8F98;
+  --naoclass-bg:#F0EFEC;
+  --radius:14px;
+  --shadow: 0 1px 2px rgba(28,35,51,0.06), 0 8px 24px -12px rgba(28,35,51,0.12);
+}
+
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+body{
+  margin:0;
+  background:var(--parchment);
+  color:var(--text);
+  font-family:'Public Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size:16px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{
+  font-family:'Fraunces', Georgia, serif;
+  font-weight:600;
+  letter-spacing:-0.01em;
+  margin:0;
+  color:var(--ink);
+}
+.mono{font-family:'IBM Plex Mono', monospace; font-variant-numeric:tabular-nums;}
+
+a{color:inherit;}
+button{font-family:inherit;}
+
+/* ============ HEADER ============ */
+.topbar{
+  background:var(--ink);
+  color:#F4F1E8;
+  padding:22px 20px 0 20px;
+  position:sticky;
+  top:0;
+  z-index:40;
+  box-shadow:0 2px 12px rgba(0,0,0,0.18);
+}
+.topbar-inner{
+  max-width:1180px;
+  margin:0 auto;
+}
+.brand-row{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:8px 20px;
+  padding-bottom:16px;
+}
+.brand-title{
+  font-size:clamp(22px, 4vw, 30px);
+  color:#FBF7EE;
+}
+.brand-sub{
+  font-size:13px;
+  color:#B9BECB;
+  font-family:'IBM Plex Mono', monospace;
+}
+.ratio-bar{
+  display:flex;
+  height:10px;
+  border-radius:999px;
+  overflow:hidden;
+  margin-bottom:16px;
+  background:#0000;
+}
+.ratio-seg{height:100%;}
+.ratio-legend{
+  display:flex;
+  gap:18px;
+  flex-wrap:wrap;
+  font-size:12.5px;
+  color:#C7CBD6;
+  padding-bottom:14px;
+}
+.ratio-legend span{display:inline-flex; align-items:center; gap:6px;}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+
+/* ============ NAV TABS ============ */
+.tabs{
+  display:flex;
+  gap:2px;
+  overflow-x:auto;
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+  border-top:1px solid rgba(255,255,255,0.08);
+}
+.tabs::-webkit-scrollbar{display:none;}
+.tab-btn{
+  flex:0 0 auto;
+  background:none;
+  border:none;
+  color:#B9BECB;
+  padding:14px 16px 12px 16px;
+  font-size:14.5px;
+  font-weight:600;
+  cursor:pointer;
+  border-bottom:3px solid transparent;
+  white-space:nowrap;
+  transition:color .15s ease;
+}
+.tab-btn:hover{color:#F4F1E8;}
+.tab-btn.active{
+  color:#FBF7EE;
+  border-bottom-color:var(--aberto);
+}
+
+/* ============ LAYOUT ============ */
+.wrap{
+  max-width:1180px;
+  margin:0 auto;
+  padding:26px 20px 80px 20px;
+}
+.panel{display:none;}
+.panel.active{display:block; animation:fadeIn .25s ease;}
+@keyframes fadeIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+/* ============ KPI CARDS ============ */
+.kpi-grid{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:14px;
+  margin-bottom:28px;
+}
+@media (max-width:800px){ .kpi-grid{grid-template-columns:repeat(2,1fr);} }
+.kpi-card{
+  background:var(--paper);
+  border-radius:var(--radius);
+  padding:18px 18px 16px 18px;
+  box-shadow:var(--shadow);
+  border-top:4px solid var(--ink);
+}
+.kpi-card.c-erva{border-top-color:var(--erva);}
+.kpi-card.c-bebida{border-top-color:var(--bebida);}
+.kpi-card.c-nc{border-top-color:var(--naoclass);}
+.kpi-label{
+  font-size:11.5px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--muted);
+  font-weight:700;
+  margin-bottom:8px;
+}
+.kpi-value{
+  font-family:'Fraunces', serif;
+  font-size:clamp(20px,2.6vw,26px);
+  font-weight:600;
+  color:var(--ink);
+}
+.kpi-pct{
+  font-size:13px;
+  color:var(--muted);
+  margin-top:2px;
+}
+
+/* ============ SECTION TITLES ============ */
+.section-title{
+  display:flex;
+  align-items:baseline;
+  gap:10px;
+  margin:34px 0 14px 0;
+}
+.section-title h2{font-size:19px;}
+.section-title .count{
+  font-size:13px;
+  color:var(--muted);
+  font-family:'IBM Plex Mono', monospace;
+}
+.section-title:first-child{margin-top:0;}
+
+/* ============ SUMMARY TABLE (situacao) ============ */
+.summary-table{
+  width:100%;
+  border-collapse:collapse;
+  background:var(--paper);
+  border-radius:var(--radius);
+  overflow:hidden;
+  box-shadow:var(--shadow);
+}
+.summary-table th{
+  text-align:left;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:#F4F1E8;
+  background:var(--ink-2);
+  padding:12px 14px;
+  font-weight:700;
+}
+.summary-table td{
+  padding:12px 14px;
+  border-bottom:1px solid var(--line);
+  font-size:14.5px;
+}
+.summary-table tr:last-child td{border-bottom:none;}
+.summary-table tr.total-row td{
+  font-weight:700;
+  background:#F1EEE3;
+}
+.num{text-align:right; font-family:'IBM Plex Mono',monospace; font-variant-numeric:tabular-nums;}
+.pill{
+  display:inline-block;
+  padding:3px 10px;
+  border-radius:999px;
+  font-size:12.5px;
+  font-weight:700;
+}
+.pill-pago{background:#E4F1E7; color:var(--pago);}
+.pill-atraso{background:var(--atraso-bg); color:var(--atraso);}
+.pill-aberto{background:var(--aberto-bg); color:var(--aberto);}
+.pill-parcial{background:#EDE7F6; color:#5E4B9C;}
+.pill-vencendo{background:#FDEFD8; color:#A05A00;}
+
+/* ============ DATA TABLE (lists) ============ */
+.controls-row{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  margin-bottom:14px;
+  flex-wrap:wrap;
+}
+.search-input{
+  flex:1 1 240px;
+  padding:10px 14px;
+  border-radius:10px;
+  border:1px solid var(--line);
+  background:var(--paper);
+  font-size:14.5px;
+  font-family:inherit;
+  color:var(--text);
+}
+.search-input:focus{outline:2px solid var(--aberto); outline-offset:1px;}
+.total-chip{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:13px;
+  color:var(--muted);
+  padding:9px 14px;
+  background:var(--paper);
+  border-radius:10px;
+  border:1px solid var(--line);
+  white-space:nowrap;
+}
+.table-scroll{
+  overflow-x:auto;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  background:var(--paper);
+}
+table.data-table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:600px;
+}
+table.data-table thead th{
+  position:sticky;
+  top:0;
+  background:var(--ink-2);
+  color:#F4F1E8;
+  text-align:left;
+  padding:11px 14px;
+  font-size:11.5px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  cursor:pointer;
+  user-select:none;
+  white-space:nowrap;
+}
+table.data-table thead th .arrow{opacity:.5; font-size:10px; margin-left:4px;}
+table.data-table tbody td{
+  padding:10px 14px;
+  border-bottom:1px solid var(--line);
+  font-size:14px;
+  white-space:nowrap;
+}
+table.data-table tbody td.wrap-cell{white-space:normal; min-width:200px;}
+table.data-table tbody tr:nth-child(even){background:#FBF9F4;}
+table.data-table tbody tr:hover{background:#F1EEE3;}
+table.data-table tbody tr:last-child td{border-bottom:none;}
+.foot-total td{
+  font-weight:700;
+  background:#F1EEE3 !important;
+  border-top:2px solid var(--ink);
+}
+.empty-note{
+  padding:30px 14px;
+  text-align:center;
+  color:var(--muted);
+  font-size:14px;
+}
+
+/* ============ FOOTER ============ */
+.footnote{
+  margin-top:30px;
+  font-size:12.5px;
+  color:var(--muted);
+  line-height:1.6;
+  padding:14px 16px;
+  background:#F1EEE3;
+  border-radius:10px;
+}
+
+.scroll-hint{
+  display:none;
+  font-size:12px;
+  color:var(--muted);
+  text-align:right;
+  margin:-6px 2px 8px 2px;
+  font-family:'IBM Plex Mono',monospace;
+  letter-spacing:.03em;
+}
+
+@media (max-width:640px){
+  .wrap{padding:18px 12px 60px 12px;}
+  .kpi-grid{grid-template-columns:1fr 1fr; gap:10px;}
+  .kpi-card{padding:14px;}
+  .scroll-hint{display:block;}
+
+  /* card-style responsive list tables (4-col lists) */
+  table.data-table.card-mode{min-width:0;}
+  table.data-table.card-mode thead{position:absolute; left:-9999px; top:-9999px;}
+  table.data-table.card-mode tbody tr{
+    display:block;
+    background:var(--paper);
+    border-bottom:8px solid var(--parchment);
+    padding:12px 14px;
+  }
+  table.data-table.card-mode tbody tr.foot-total{background:#F1EEE3; border-bottom:none;}
+  table.data-table.card-mode tbody td{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    padding:5px 0;
+    border-bottom:none;
+    white-space:normal;
+    font-size:14px;
+  }
+  table.data-table.card-mode tbody td::before{
+    content:attr(data-label);
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--muted);
+    font-weight:700;
+    flex:0 0 auto;
+  }
+  table.data-table.card-mode tbody td:first-child{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:16px;
+    color:var(--ink);
+  }
+  table.data-table.card-mode tbody td:first-child::before{content:'';}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand-row">
+      <h1 class="brand-title">Fechamento Financeiro</h1>
+      <div class="brand-sub" id="baseInfo">base: relatorio_17_08_2026</div>
+    </div>
+    <div class="ratio-bar" id="ratioBar"></div>
+    <div class="ratio-legend" id="ratioLegend"></div>
+    <div class="tabs" id="tabs"></div>
+  </div>
+</div>
+
+<div class="wrap" id="wrap"></div>
+
+<script id="dados-json" type="application/json">
+[{"pedido": 8245, "cliente": "A & S PASQUALOTO LTDA (LRV)", "valor": 20020.65, "erva": 20020.65, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8245 - 00047801", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "29/06/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 312.75, "erva": 0, "bebida": 0, "situacao": "Pago", "obs": "REF. ADIANTAMENTO.", "descricao": "Carteira", "categoria": "ADIANTAMENTO FUNCIONÁRIO COMPRA", "vencimento": "05/06/2026"}, {"pedido": 8246, "cliente": "BLEND IMPORTS LTDA", "valor": 1375.0, "erva": 1375.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8246", "descricao": "PIX COROLESKI SANTANDER", "categoria": "VENDAS À VISTA", "vencimento": "01/06/2026"}, {"pedido": 8250, "cliente": "N.GATTI LTDA", "valor": 1548.37, "erva": 1548.37, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8250", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "09/06/2026"}, {"pedido": 8250, "cliente": "N.GATTI LTDA", "valor": 1548.38, "erva": 1548.38, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8250", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "16/06/2026"}, {"pedido": 8249, "cliente": "SOARES DA SILVA & CIA LTDA", "valor": 1700.0, "erva": 1700.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8249 - 00036501", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "16/06/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 520.32, "erva": 0, "bebida": 0, "situacao": "Pago", "obs": "REF A DUAS PARCELAS IPVA GOL.", "descricao": "-", "categoria": "-", "vencimento": "05/06/2026"}, {"pedido": 8251, "cliente": "ANTÔNIO JOSÉ DE OLIVEIRA BORRACHARIA - M", "valor": 271.69, "erva": 271.69, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8251", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "27/06/2026"}, {"pedido": 8251, "cliente": "ANTÔNIO JOSÉ DE OLIVEIRA BORRACHARIA - M", "valor": 271.94, "erva": 271.94, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8251", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "11/06/2026"}, {"pedido": 8251, "cliente": "ANTÔNIO JOSÉ DE OLIVEIRA BORRACHARIA - M", "valor": 271.94, "erva": 271.94, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8251", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "19/06/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 882.99, "erva": 0, "bebida": 0, "situacao": "Pago", "obs": "REF. ADIANTAMENTO SALARIAL FEITO NO DIA 03/06/2025", "descricao": "Carteira", "categoria": "ADIANTAMENTO FUNCIONÁRIO COMPRA", "vencimento": "05/06/2026"}, {"pedido": 8253, "cliente": "G. C. M. MARTINS", "valor": 392.05, "erva": 392.05, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8253 - 00037002", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "01/07/2026"}, {"pedido": 8253, "cliente": "G. C. M. MARTINS", "valor": 392.05, "erva": 392.05, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8253 - 00037001", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "17/06/2026"}, {"pedido": 8252, "cliente": "M. ALBERTI LTDA", "valor": 2729.38, "erva": 2729.38, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8252", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "03/06/2026"}, {"pedido": 8258, "cliente": "COMERCIAL CARAPA DE SECOS E MOLHADOS LTDA-MATUPA", "valor": 13137.6, "erva": 13137.6, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8258 - 00048101", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "03/07/2026"}, {"pedido": 8256, "cliente": "D.S.DISTRIBUIDORA E MERCADO LTDA", "valor": 1233.0, "erva": 1233.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8256 - 00037201", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "19/06/2026"}, {"pedido": 8255, "cliente": "ESSER COMERCIO VAREJISTA DE PRODUTOS ALIMENTICIOS E TABACARI", "valor": 672.75, "erva": 672.75, "bebida": 0, "situacao": "Atrasada", "obs": "Ref. ao pedido de venda nº 8255", "descricao": "Carteira", "categoria": "VENDA À PRAZO", "vencimento": "13/06/2026"}, {"pedido": 8259, "cliente": "LEONARDO COSTA MICHELS", "valor": 1335.04, "erva": 1335.04, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8259", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "05/06/2026"}, {"pedido": 8254, "cliente": "RAYANE OLIVEIRA FERREIRA DE ALMEIDA", "valor": 716.93, "erva": 716.93, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8254", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "04/06/2026"}, {"pedido": 8261, "cliente": "ROMY SCHNEIDER (ADMINISTRATIVO)", "valor": 29.0, "erva": 29.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8261", "descricao": "Carteira", "categoria": "VENDA À PRAZO", "vencimento": "05/07/2026"}, {"pedido": 8262, "cliente": "E S DA SILVA SANTOS", "valor": 1736.0, "erva": 1736.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8262", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "06/07/2026"}, {"pedido": 8264, "cliente": "AGROSHOP MT LTDA (FILIAL)", "valor": 376.01, "erva": 376.01, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8264 - 00037602", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "24/06/2026"}, {"pedido": 8264, "cliente": "AGROSHOP MT LTDA (FILIAL)", "valor": 638.0, "erva": 638.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8264 - 00037601", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "16/06/2026"}, {"pedido": 8264, "cliente": "AGROSHOP MT LTDA (FILIAL)", "valor": 638.0, "erva": 638.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8264 - 00037603", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "02/07/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 404.25, "erva": 0, "bebida": 0, "situacao": "Pago", "obs": "REF A RENEGOCIAÇÃO DE DIVIDA R$1617,00 SENDO DESCONTADO 1 PARCELA NO ATO DO PARCELAMENTO ,SENDO ASSIM FICAM 3 PARCELAS", "descricao": "-", "categoria": "-", "vencimento": "05/07/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 404.25, "erva": 0, "bebida": 0, "situacao": "Em aberto", "obs": "REF A RENEGOCIAÇÃO DE DIVIDA R$1617,00 SENDO DESCONTADO 1 PARCELA NO ATO DO PARCELAMENTO ,SENDO ASSIM FICAM 3 PARCELAS", "descricao": "-", "categoria": "-", "vencimento": "05/09/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 404.25, "erva": 0, "bebida": 0, "situacao": "Atrasada", "obs": "REF A RENEGOCIAÇÃO DE DIVIDA R$1617,00 SENDO DESCONTADO 1 PARCELA NO ATO DO PARCELAMENTO ,SENDO ASSIM FICAM 3 PARCELAS", "descricao": "-", "categoria": "-", "vencimento": "05/08/2026"}, {"pedido": 8268, "cliente": "ATACADO PORTAL LTDA", "valor": 1700.0, "erva": 1700.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8268 - 00037901", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "07/07/2026"}, {"pedido": 8268, "cliente": "ATACADO PORTAL LTDA", "valor": 1700.0, "erva": 1700.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8268 - 00037902", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "14/07/2026"}, {"pedido": 8286, "cliente": "COMPACTA COMERCIAL LTDA RONDONÓPOLIS", "valor": 20586.0, "erva": 0, "bebida": 20586.0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8286 - 00049301", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "07/07/2026"}, {"pedido": 8285, "cliente": "COMPACTA COMERCIAL LTDA TANGARA DA SERRA", "valor": 22776.0, "erva": 0, "bebida": 22776.0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8285 - 00049201", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "07/07/2026"}, {"pedido": 8269, "cliente": "ELIOENA DOS SANTOS VERA", "valor": 557.0, "erva": 557.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8269", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "09/06/2026"}, {"pedido": 8265, "cliente": "Ilton Martins de Souza", "valor": 2453.4, "erva": 2453.4, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8265", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "08/06/2026"}, {"pedido": 8267, "cliente": "IRES STULP", "valor": 6545.0, "erva": 6545.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8267 - 00037701", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "07/07/2026"}, {"pedido": 8267, "cliente": "IRES STULP", "valor": 6545.0, "erva": 6545.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8267 - 00037702", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "14/07/2026"}, {"pedido": 8283, "cliente": "MARTINS & MARTINS LTDA (CENTRO)", "valor": 1839.6, "erva": 0, "bebida": 1839.6, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8283 - 00048901", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "07/07/2026"}, {"pedido": 8282, "cliente": "MARTINS & MARTINS LTDA (JARDIM BARCELONA)", "valor": 3942.0, "erva": 0, "bebida": 3942.0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8282 - 00048801", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "07/07/2026"}, {"pedido": 8280, "cliente": "MARTINS & MARTINS LTDA (JARDIM BOTANICO)", "valor": 3591.6, "erva": 0, "bebida": 3591.6, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8280 -  00048601", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "07/07/2026"}, {"pedido": 8278, "cliente": "MARTINS & MARTINS LTDA (JARDIM PRIMAVERA)", "valor": 1839.6, "erva": 0, "bebida": 1839.6, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8278 - 00048401", "descricao": "BOLETO SCHNEIDER", "categoria": "PENDENTE ANÁLISE", "vencimento": "07/07/2026"}, {"pedido": 8279, "cliente": "MARTINS & MARTINS LTDA (SETOR COMERCIAL)", "valor": 3328.8, "erva": 0, "bebida": 3328.8, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8279 - 00048501", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "07/07/2026"}, {"pedido": 8281, "cliente": "MARTINS & MARTINS LTDA(PQ UNIVERSITARIO)", "valor": 2803.2, "erva": 0, "bebida": 2803.2, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8281 - 00048701", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "07/07/2026"}, {"pedido": 8274, "cliente": "MARTINS & MARTINS NETO LTDA (CARANDA BOSQUE)", "valor": 4029.6, "erva": 0, "bebida": 4029.6, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8274 - 00048201", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "07/07/2026"}, {"pedido": 8277, "cliente": "MARTINS & MARTINS NETO LTDA (CHACARAS)", "valor": 5781.6, "erva": 0, "bebida": 5781.6, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8277 - 00049001", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "07/07/2026"}, {"pedido": 8284, "cliente": "MARTINS & MARTINS NETO LTDA - SINOP", "valor": 4818.0, "erva": 0, "bebida": 4818.0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8284 - 00049101", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "07/07/2026"}, {"pedido": 8270, "cliente": "SANTOGO ALIMENTOS LTDA", "valor": 3219.0, "erva": 3219.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8270 - 00038101", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "30/06/2026"}, {"pedido": 8270, "cliente": "SANTOGO ALIMENTOS LTDA", "valor": 3219.0, "erva": 3219.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8270 - 00038102", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "07/07/2026"}, {"pedido": 8276, "cliente": "ALINE DE AMORIM NUNES LTDA", "valor": 1130.0, "erva": 1130.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8276", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "09/06/2026"}, {"pedido": 8290, "cliente": "ALINE DOS ANJOS SILVA / TERERE UNIVERSITARIO", "valor": 782.33, "erva": 782.33, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8290 - 008290/02", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "24/06/2026"}, {"pedido": 8290, "cliente": "ALINE DOS ANJOS SILVA / TERERE UNIVERSITARIO", "valor": 782.33, "erva": 782.33, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8290 - 008290/03", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "01/07/2026"}, {"pedido": 8290, "cliente": "ALINE DOS ANJOS SILVA / TERERE UNIVERSITARIO", "valor": 782.34, "erva": 782.34, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8290 - 008290/01", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "29/06/2026"}, {"pedido": 8287, "cliente": "BLEND IMPORTS LTDA", "valor": 1576.6, "erva": 1576.6, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8287", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "10/06/2026"}, {"pedido": 8275, "cliente": "CARLOS ALBERTO MARTELLI", "valor": 435.0, "erva": 435.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8275", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "11/06/2026"}, {"pedido": 8288, "cliente": "COMERCIAL CARAPA DE SECOS E MOLHADOS LTDA-COLIDER", "valor": 25228.8, "erva": 0, "bebida": 25228.8, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8288 - 00049401", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "08/07/2026"}, {"pedido": 8227, "cliente": "Não identificado", "valor": 6251.4, "erva": 3480.4, "bebida": 2771.0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8227 - 000459/477", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "06/07/2026"}, {"pedido": 8273, "cliente": "ROMES DOS SANTOS FREITAS", "valor": 53.11, "erva": 53.11, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8273", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "10/06/2026"}, {"pedido": 8289, "cliente": "SINUELO SUCOS E LANCHES LTDA", "valor": 967.2, "erva": 967.2, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8289 - 00038201", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "24/06/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 100.0, "erva": 0, "bebida": 0, "situacao": "Pago", "obs": "COMBUSTIVEL.", "descricao": "Boleto", "categoria": "-", "vencimento": "05/07/2026"}, {"pedido": 8292, "cliente": "CARLOS ALBERTO MARTELLI", "valor": 560.0, "erva": 560.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8292", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "12/06/2026"}, {"pedido": 8291, "cliente": "LOVE PET RACOES E ACESS PARA ANIMAIS DE ESTIM LTDA", "valor": 1650.0, "erva": 1650.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8291", "descricao": "LINK DE PAGAMENTO SICREDI", "categoria": "VENDA À PRAZO", "vencimento": "11/06/2026"}, {"pedido": 8294, "cliente": "ARAO PEREIRA DE SA LTDA", "valor": 1669.34, "erva": 1669.34, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8294 - 00038601", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "18/06/2026"}, {"pedido": 8294, "cliente": "ARAO PEREIRA DE SA LTDA", "valor": 1669.35, "erva": 1669.35, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8294 - 00038602", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "25/06/2026"}, {"pedido": 8301, "cliente": "BLACK COMERCIO DE GAS E CONVENIENCIA LTDA", "valor": 980.66, "erva": 980.66, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8301 - 00039001", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "10/07/2026"}, {"pedido": 8301, "cliente": "BLACK COMERCIO DE GAS E CONVENIENCIA LTDA", "valor": 980.67, "erva": 980.67, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8301 - 00039002", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "17/07/2026"}, {"pedido": 8301, "cliente": "BLACK COMERCIO DE GAS E CONVENIENCIA LTDA", "valor": 980.67, "erva": 980.67, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8301 - 00039003", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "24/07/2026"}, {"pedido": 8298, "cliente": "BLEND IMPORTS LTDA", "valor": 430.4, "erva": 430.4, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8298", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "12/06/2026"}, {"pedido": 8297, "cliente": "BLEND IMPORTS LTDA", "valor": 3120.0, "erva": 3120.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8297", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "12/06/2026"}, {"pedido": 8299, "cliente": "DISTRIBUIDORA BATAGLINI", "valor": 3795.0, "erva": 3795.0, "bebida": 0, "situacao": "Atrasada", "obs": "Ref. ao pedido de venda nº 8299", "descricao": "Carteira", "categoria": "VENDA À PRAZO", "vencimento": "12/06/2026"}, {"pedido": 8293, "cliente": "E. RAMOS DA SILVA", "valor": 215.98, "erva": 215.98, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8293 - 00038702", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "09/07/2026"}, {"pedido": 8293, "cliente": "E. RAMOS DA SILVA", "valor": 215.98, "erva": 215.98, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8293 - 00038701", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "25/06/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 882.99, "erva": 0, "bebida": 0, "situacao": "Pago", "obs": "REF. ADIANTAMENTO SALARIAL", "descricao": "Carteira", "categoria": "-", "vencimento": "12/06/2026"}, {"pedido": 8300, "cliente": "ROSELINA MARTINS DA SILVA", "valor": 547.41, "erva": 547.41, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8300 - 00038902", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "28/06/2026"}, {"pedido": 8300, "cliente": "ROSELINA MARTINS DA SILVA", "valor": 547.41, "erva": 547.41, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8300 - 00038903", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "06/07/2026"}, {"pedido": 8300, "cliente": "ROSELINA MARTINS DA SILVA", "valor": 547.43, "erva": 547.43, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8300 - 00038901", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "20/06/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 200.0, "erva": 0, "bebida": 0, "situacao": "Pago", "obs": "REF. ADIANTAMENTO SALARIAL", "descricao": "Carteira", "categoria": "ADIANTAMENTO FUNCIONÁRIO COMPRA", "vencimento": "15/06/2026"}, {"pedido": 8306, "cliente": "BRENDO HERMINIO DA SILVA", "valor": 200.0, "erva": 200.0, "bebida": 0, "situacao": "Atrasada", "obs": "Ref. ao pedido de venda nº 8306", "descricao": "PIX COROLESKI SANTANDER", "categoria": "VENDAS À VISTA", "vencimento": "15/06/2026"}, {"pedido": 8303, "cliente": "COOPERATIVA AGROPECUARIA MISTA TERRANOVA LTDA COOPERNOVA", "valor": 2562.0, "erva": 2562.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8303 - 00039101", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "10/07/2026"}, {"pedido": 8303, "cliente": "COOPERATIVA AGROPECUARIA MISTA TERRANOVA LTDA COOPERNOVA", "valor": 2562.0, "erva": 2562.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8303 - 00039102", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "24/07/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 2000.0, "erva": 0, "bebida": 0, "situacao": "Pago", "obs": "REF A RENEGOCIAÇÃO KENEDY R$ 2.000,00 SEMANAL .", "descricao": "-", "categoria": "-", "vencimento": "15/06/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 2000.0, "erva": 0, "bebida": 0, "situacao": "Pago", "obs": "REF A RENEGOCIAÇÃO KENEDY R$ 2.000,00 SEMANAL .", "descricao": "-", "categoria": "-", "vencimento": "22/06/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 2000.0, "erva": 0, "bebida": 0, "situacao": "Pago", "obs": "REF A RENEGOCIAÇÃO KENEDY R$ 2.000,00 SEMANAL .", "descricao": "-", "categoria": "-", "vencimento": "29/06/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 2000.0, "erva": 0, "bebida": 0, "situacao": "Pago", "obs": "REF A RENEGOCIAÇÃO KENEDY R$ 2.000,00 SEMANAL .", "descricao": "-", "categoria": "-", "vencimento": "06/07/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 2000.0, "erva": 0, "bebida": 0, "situacao": "Parcial", "obs": "REF A RENEGOCIAÇÃO KENEDY R$ 2.000,00 SEMANAL .", "descricao": "-", "categoria": "-", "vencimento": "13/07/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 2000.0, "erva": 0, "bebida": 0, "situacao": "Em aberto", "obs": "REF A RENEGOCIAÇÃO KENEDY R$ 2.000,00 SEMANAL .", "descricao": "-", "categoria": "-", "vencimento": "24/08/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 2000.0, "erva": 0, "bebida": 0, "situacao": "Em aberto", "obs": "REF A RENEGOCIAÇÃO KENEDY R$ 2.000,00 SEMANAL .", "descricao": "-", "categoria": "-", "vencimento": "31/08/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 2000.0, "erva": 0, "bebida": 0, "situacao": "Em aberto", "obs": "REF A RENEGOCIAÇÃO KENEDY R$ 2.000,00 SEMANAL .", "descricao": "-", "categoria": "-", "vencimento": "07/09/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 2000.0, "erva": 0, "bebida": 0, "situacao": "Em aberto", "obs": "REF A RENEGOCIAÇÃO KENEDY R$ 2.000,00 SEMANAL .", "descricao": "-", "categoria": "-", "vencimento": "14/09/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 2000.0, "erva": 0, "bebida": 0, "situacao": "Atrasada", "obs": "REF A RENEGOCIAÇÃO KENEDY R$ 2.000,00 SEMANAL .", "descricao": "-", "categoria": "-", "vencimento": "20/07/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 2000.0, "erva": 0, "bebida": 0, "situacao": "Atrasada", "obs": "REF A RENEGOCIAÇÃO KENEDY R$ 2.000,00 SEMANAL .", "descricao": "-", "categoria": "-", "vencimento": "27/07/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 2000.0, "erva": 0, "bebida": 0, "situacao": "Atrasada", "obs": "REF A RENEGOCIAÇÃO KENEDY R$ 2.000,00 SEMANAL .", "descricao": "-", "categoria": "-", "vencimento": "03/08/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 2000.0, "erva": 0, "bebida": 0, "situacao": "Atrasada", "obs": "REF A RENEGOCIAÇÃO KENEDY R$ 2.000,00 SEMANAL .", "descricao": "-", "categoria": "-", "vencimento": "10/08/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 2000.0, "erva": 0, "bebida": 0, "situacao": "Vencendo hoje", "obs": "REF A RENEGOCIAÇÃO KENEDY R$ 2.000,00 SEMANAL .", "descricao": "-", "categoria": "-", "vencimento": "17/08/2026"}, {"pedido": 8310, "cliente": "GIRUS MERCANTIL LTDA - FILINTO MULLER", "valor": 227.96, "erva": 227.96, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8310 - 00066002", "descricao": "BOLETO BANCO BRB A. G. COM", "categoria": "VENDA À PRAZO", "vencimento": "14/07/2026"}, {"pedido": 8310, "cliente": "GIRUS MERCANTIL LTDA - FILINTO MULLER", "valor": 227.96, "erva": 227.96, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8310 - 00066003", "descricao": "BOLETO BANCO BRB A. G. COM", "categoria": "VENDA À PRAZO", "vencimento": "21/07/2026"}, {"pedido": 8310, "cliente": "GIRUS MERCANTIL LTDA - FILINTO MULLER", "valor": 227.96, "erva": 227.96, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8310 - 0006601", "descricao": "BOLETO BANCO BRB A. G. COM", "categoria": "VENDA À PRAZO", "vencimento": "07/07/2026"}, {"pedido": 8311, "cliente": "GIRUS MERCANTIL LTDA - MIGUEL SUTIL", "valor": 2796.8, "erva": 2796.8, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8311 - 00066101", "descricao": "BOLETO BANCO BRB A. G. COM", "categoria": "VENDA À PRAZO", "vencimento": "07/07/2026"}, {"pedido": 8311, "cliente": "GIRUS MERCANTIL LTDA - MIGUEL SUTIL", "valor": 2796.8, "erva": 2796.8, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8311 - 00066102", "descricao": "BOLETO BANCO BRB A. G. COM", "categoria": "VENDA À PRAZO", "vencimento": "14/07/2026"}, {"pedido": 8311, "cliente": "GIRUS MERCANTIL LTDA - MIGUEL SUTIL", "valor": 2796.8, "erva": 2796.8, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8311 - 00066103", "descricao": "BOLETO BANCO BRB A. G. COM", "categoria": "VENDA À PRAZO", "vencimento": "21/07/2026"}, {"pedido": 8314, "cliente": "GIRUS MERCANTIL LTDA-AV BRASILIA", "valor": 1832.1, "erva": 1832.1, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8314 - 00066203", "descricao": "BOLETO BANCO BRB A. G. COM", "categoria": "VENDA À PRAZO", "vencimento": "21/07/2026"}, {"pedido": 8314, "cliente": "GIRUS MERCANTIL LTDA-AV BRASILIA", "valor": 1832.1, "erva": 1832.1, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8314 -00066202", "descricao": "BOLETO BANCO BRB A. G. COM", "categoria": "VENDA À PRAZO", "vencimento": "14/07/2026"}, {"pedido": 8314, "cliente": "GIRUS MERCANTIL LTDA-AV BRASILIA", "valor": 1832.11, "erva": 1832.11, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8314 - 00066201", "descricao": "BOLETO BANCO BRB A. G. COM", "categoria": "VENDA À PRAZO", "vencimento": "07/07/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 44342.0, "erva": 0, "bebida": 0, "situacao": "Parcial", "obs": "REF AO CONTAS EM ABERTO.", "descricao": "PIX", "categoria": "-", "vencimento": "16/06/2026"}, {"pedido": 8309, "cliente": "L. R. DE OLIVEIRA RATTI LTDA", "valor": 486.0, "erva": 486.0, "bebida": 0, "situacao": "Atrasada", "obs": "Ref. ao pedido de venda nº 8309", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "16/06/2026"}, {"pedido": 8308, "cliente": "PRIME BOI GRILL - BOUTIQUE DA CARNE EXPRESS LTDA", "valor": 435.9, "erva": 435.9, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8308 - 00039202", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "30/06/2026"}, {"pedido": 8308, "cliente": "PRIME BOI GRILL - BOUTIQUE DA CARNE EXPRESS LTDA", "valor": 435.9, "erva": 435.9, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8308 - 00039201", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "23/06/2026"}, {"pedido": 8313, "cliente": "ROMES DOS SANTOS FREITAS", "valor": 190.0, "erva": 190.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8313", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "16/06/2026"}, {"pedido": 8315, "cliente": "ROTA ACESSORIOS E TABACARIA- MAXSUEL", "valor": 250.0, "erva": 250.0, "bebida": 0, "situacao": "Atrasada", "obs": "Ref. ao pedido de venda nº 8315", "descricao": "Carteira", "categoria": "VENDA À PRAZO", "vencimento": "17/06/2026"}, {"pedido": 8318, "cliente": "BLEND IMPORTS LTDA", "valor": 1370.0, "erva": 1370.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8318", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "18/06/2026"}, {"pedido": 8317, "cliente": "CAMPO NOVO COMERCIAL LTDA", "valor": 3154.0, "erva": 3154.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8317 - 00050601", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "02/07/2026"}, {"pedido": 8319, "cliente": "GABRIEL MALAQUIS DE SOUZA", "valor": 1370.0, "erva": 1370.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8319", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "18/06/2026"}, {"pedido": 8321, "cliente": "JOBSO NEVES ABADE TIOLA", "valor": 522.0, "erva": 522.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8321", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "18/06/2026"}, {"pedido": 8323, "cliente": "PASQUALOTTO & PASQUALOTTO LTDA", "valor": 5431.2, "erva": 5431.2, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8323 - 00050901", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "12/07/2026"}, {"pedido": 8322, "cliente": "PASQUALOTTO & PASQUALOTTO LTDA-MODULO V JUINA", "valor": 3854.4, "erva": 3854.4, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8322 - 00050801", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "12/07/2026"}, {"pedido": 8316, "cliente": "REAL ATACADISTA CAMPO NOVO LTDA", "valor": 1162.0, "erva": 1162.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8316 - 00050501", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "02/07/2026"}, {"pedido": 8320, "cliente": "ROSIMAR SANTOS DE FREITAS", "valor": 324.56, "erva": 324.56, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8320 - 008320/01", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "25/06/2026"}, {"pedido": 8320, "cliente": "ROSIMAR SANTOS DE FREITAS", "valor": 324.57, "erva": 324.57, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8320 - 008320/02", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "02/07/2026"}, {"pedido": 8320, "cliente": "ROSIMAR SANTOS DE FREITAS", "valor": 324.57, "erva": 324.57, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8320 - 008320/03", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "09/07/2026"}, {"pedido": 8324, "cliente": "ANTONIO CARLOS DA SILVA", "valor": 123.5, "erva": 123.5, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8324", "descricao": "-", "categoria": "VENDA À PRAZO", "vencimento": "19/07/2026"}, {"pedido": 8336, "cliente": "COMERCIAL CARAPA DE SECOS E MOLHADOS LTDA-COLIDER", "valor": 13928.4, "erva": 0, "bebida": 13928.4, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8336 - 00050301", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "10/07/2026"}, {"pedido": 8312, "cliente": "DISTRIBUIDORA RONCADOR COMERCIO DE PROD ALIMENTICIOS LTDA", "valor": 3550.0, "erva": 3550.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8312", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "16/06/2026"}, {"pedido": 8312, "cliente": "DISTRIBUIDORA RONCADOR COMERCIO DE PROD ALIMENTICIOS LTDA", "valor": 3866.66, "erva": 3866.66, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8312", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "07/07/2026"}, {"pedido": 8312, "cliente": "DISTRIBUIDORA RONCADOR COMERCIO DE PROD ALIMENTICIOS LTDA", "valor": 3866.67, "erva": 3866.67, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8312", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "30/06/2026"}, {"pedido": 8312, "cliente": "DISTRIBUIDORA RONCADOR COMERCIO DE PROD ALIMENTICIOS LTDA", "valor": 3866.67, "erva": 3866.67, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8312", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "07/07/2026"}, {"pedido": 8312, "cliente": "DISTRIBUIDORA RONCADOR COMERCIO DE PROD ALIMENTICIOS LTDA", "valor": 4500.0, "erva": 4500.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8312", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "30/06/2026"}, {"pedido": 8312, "cliente": "DISTRIBUIDORA RONCADOR COMERCIO DE PROD ALIMENTICIOS LTDA", "valor": 4500.0, "erva": 4500.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8312 - a pedido do cliente e autorizado por Guilherme o boleto foi atualizado da data do dia 01/07 p/ 21/07/2026", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "21/07/2026"}, {"pedido": 8335, "cliente": "MARTINS & MARTINS LTDA (CENTRO)", "valor": 1489.2, "erva": 0, "bebida": 1489.2, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8335 - 00050201", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "10/07/2026"}, {"pedido": 8334, "cliente": "MARTINS & MARTINS LTDA (JARDIM BARCELONA)", "valor": 2190.0, "erva": 0, "bebida": 2190.0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8334 - 00050101", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "10/07/2026"}, {"pedido": 8332, "cliente": "MARTINS & MARTINS LTDA (JARDIM BOTANICO)", "valor": 2540.4, "erva": 0, "bebida": 2540.4, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8332 - 00049901", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "10/07/2026"}, {"pedido": 8330, "cliente": "MARTINS & MARTINS LTDA (JARDIM PRIMAVERA)", "valor": 1051.2, "erva": 0, "bebida": 1051.2, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8330 - 00049701", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "10/07/2026"}, {"pedido": 8331, "cliente": "MARTINS & MARTINS LTDA (SETOR COMERCIAL)", "valor": 2803.2, "erva": 0, "bebida": 2803.2, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8331 - 00049801", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "10/07/2026"}, {"pedido": 8333, "cliente": "MARTINS & MARTINS LTDA(PQ UNIVERSITARIO)", "valor": 2190.0, "erva": 0, "bebida": 2190.0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8333 - 00050001", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "10/07/2026"}, {"pedido": 8328, "cliente": "MARTINS & MARTINS NETO LTDA (CARANDA BOSQUE)", "valor": 2540.4, "erva": 0, "bebida": 2540.4, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8328 - 00049501", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "10/07/2026"}, {"pedido": 8329, "cliente": "MARTINS & MARTINS NETO LTDA (CHACARAS)", "valor": 5431.2, "erva": 0, "bebida": 5431.2, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8329 - 00049601", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "10/07/2026"}, {"pedido": 8338, "cliente": "MARTINS & MARTINS NETO LTDA - SINOP", "valor": 4380.0, "erva": 0, "bebida": 4380.0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8338 - 00050401", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "10/07/2026"}, {"pedido": 8327, "cliente": "ROMES DOS SANTOS FREITAS", "valor": 39.3, "erva": 39.3, "bebida": 0, "situacao": "Atrasada", "obs": "Ref. ao pedido de venda nº 8327", "descricao": "Carteira", "categoria": "VENDA À PRAZO", "vencimento": "19/07/2026"}, {"pedido": 8337, "cliente": "ROMES DOS SANTOS FREITAS", "valor": 219.9, "erva": 219.9, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8337", "descricao": "Carteira", "categoria": "VENDA À PRAZO", "vencimento": "19/07/2026"}, {"pedido": 8326, "cliente": "ROMES DOS SANTOS FREITAS", "valor": 1749.8, "erva": 1749.8, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8326", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "19/06/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 500.0, "erva": 0, "bebida": 0, "situacao": "Pago", "obs": "REF A ADIANTAMENTO SALARIAL.\n3X 500,00", "descricao": "-", "categoria": "ADIANTAMENTO FUNCIONÁRIO COMPRA", "vencimento": "05/07/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 500.0, "erva": 0, "bebida": 0, "situacao": "Pago", "obs": "REF A ADIANTAMENTO SALARIAL.\n3X 500,00", "descricao": "-", "categoria": "ADIANTAMENTO FUNCIONÁRIO COMPRA", "vencimento": "05/08/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 500.0, "erva": 0, "bebida": 0, "situacao": "Em aberto", "obs": "REF A ADIANTAMENTO SALARIAL.\n3X 500,00", "descricao": "-", "categoria": "ADIANTAMENTO FUNCIONÁRIO COMPRA", "vencimento": "05/09/2026"}, {"pedido": 8325, "cliente": "TREVISOL & CIA LTDA", "valor": 2234.0, "erva": 2234.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8325 - 00039701", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "17/07/2026"}, {"pedido": 8341, "cliente": "BLEND IMPORTS LTDA", "valor": 1152.78, "erva": 1152.78, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8341", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "22/06/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 350.0, "erva": 0, "bebida": 0, "situacao": "Pago", "obs": "ADIANTAMENTO SALARIAL.", "descricao": "-", "categoria": "ADIANTAMENTO FUNCIONÁRIO COMPRA", "vencimento": "05/07/2026"}, {"pedido": 8340, "cliente": "ILDA ALVES BLOOT", "valor": 348.0, "erva": 348.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8340", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "23/06/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 2400.0, "erva": 0, "bebida": 0, "situacao": "Pago", "obs": "ADIANTAMENTO SALARIAL.", "descricao": "-", "categoria": "ADIANTAMENTO FUNCIONÁRIO COMPRA", "vencimento": "05/07/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 882.99, "erva": 0, "bebida": 0, "situacao": "Pago", "obs": "ADIANTAMENTO SALARIAL.", "descricao": "-", "categoria": "ADIANTAMENTO FUNCIONÁRIO COMPRA", "vencimento": "05/07/2026"}, {"pedido": 8343, "cliente": "DIEGO LINHARES DA SILVA", "valor": 1762.97, "erva": 1762.97, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8343", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "23/06/2026"}, {"pedido": 8345, "cliente": "EVERSON SERGIO DOS SANTOS SILVA", "valor": 14.0, "erva": 14.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8345", "descricao": "Carteira", "categoria": "VENDA À PRAZO", "vencimento": "25/06/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 7095.6, "erva": 0, "bebida": 0, "situacao": "Atrasada", "obs": "REFERENTE AO PED ESSENCIATTI PARA OS ESTADOS UNIDOS.", "descricao": "Boleto", "categoria": "-", "vencimento": "10/07/2026"}, {"pedido": 8348, "cliente": "RIVA TABACARIA LOUNGE BAR LTDA", "valor": 149.0, "erva": 149.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8348", "descricao": "Dinheiro do Caixa", "categoria": "VENDAS À VISTA", "vencimento": "24/06/2026"}, {"pedido": 8347, "cliente": "REGINALDO MARTINS", "valor": 528.0, "erva": 528.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8347", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "25/06/2026"}, {"pedido": 8350, "cliente": "E. DE LIMA SILVESTRE", "valor": 409.9, "erva": 409.9, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8350", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "26/06/2026"}, {"pedido": 8305, "cliente": "IMPORTADOS CUIABA", "valor": 17454.49, "erva": 17454.49, "bebida": 0, "situacao": "Atrasada", "obs": "Ref. ao pedido de venda nº 8305", "descricao": "Carteira", "categoria": "PENDENTE ANÁLISE", "vencimento": "30/06/2026"}, {"pedido": 8229, "cliente": "Não identificado", "valor": 2039.58, "erva": 1019.79, "bebida": 1019.79, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8229", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "01/07/2026"}, {"pedido": 8229, "cliente": "Não identificado", "valor": 2039.58, "erva": 1019.79, "bebida": 1019.79, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8229", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "24/06/2026"}, {"pedido": 8349, "cliente": "TAMIRES DA SILVA PRESTES", "valor": 180.0, "erva": 180.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8349", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "26/06/2026"}, {"pedido": 8353, "cliente": "ROTA ACESSORIOS E TABACARIA- MAXSUEL", "valor": 25609.9, "erva": 25609.9, "bebida": 0, "situacao": "Atrasada", "obs": "Ref. ao pedido de venda nº 8353", "descricao": "Carteira", "categoria": "VENDA À PRAZO", "vencimento": "05/07/2026"}, {"pedido": 8357, "cliente": "CAMPO NOVO COMERCIAL LTDA", "valor": 2822.0, "erva": 2822.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8357 - 00051201", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "13/07/2026"}, {"pedido": 8358, "cliente": "MODELAO CAIPIRA LTDA", "valor": 960.0, "erva": 960.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8358", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "13/07/2026"}, {"pedido": 8360, "cliente": "RAYANE OLIVEIRA FERREIRA DE ALMEIDA", "valor": 690.15, "erva": 690.15, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8360", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "29/06/2026"}, {"pedido": 8356, "cliente": "REAL ATACADISTA CAMPO NOVO LTDA", "valor": 2324.0, "erva": 2324.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8356 - 00051301", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "13/07/2026"}, {"pedido": 8359, "cliente": "REGINALDO MARTINS", "valor": 352.0, "erva": 352.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8359", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "29/06/2026"}, {"pedido": 8362, "cliente": "BRUNO LUCAS DOS REIS COSTA", "valor": 220.0, "erva": 220.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8362", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "30/06/2026"}, {"pedido": 8365, "cliente": "MATHEUS ELIAS GOMES ALVES", "valor": 1313.0, "erva": 1313.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8365", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "30/06/2026"}, {"pedido": 8364, "cliente": "PABLO PEDROSA DOS SANTOS", "valor": 82.75, "erva": 82.75, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8364", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "30/06/2026"}, {"pedido": 8361, "cliente": "PABLO PEDROSA DOS SANTOS", "valor": 129.9, "erva": 129.9, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8361", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "30/06/2026"}, {"pedido": 8363, "cliente": "PABLO PEDROSA DOS SANTOS", "valor": 1210.0, "erva": 1210.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8363", "descricao": "LINK DE PAGAMENTO SICREDI", "categoria": "VENDAS À VISTA", "vencimento": "30/06/2026"}, {"pedido": 8351, "cliente": "R TORQUATO DE SOUZA LTDA (JOAO BOSCO)", "valor": 2317.33, "erva": 2317.33, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8351", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "17/07/2026"}, {"pedido": 8351, "cliente": "R TORQUATO DE SOUZA LTDA (JOAO BOSCO)", "valor": 2317.33, "erva": 2317.33, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8351", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "24/07/2026"}, {"pedido": 8351, "cliente": "R TORQUATO DE SOUZA LTDA (JOAO BOSCO)", "valor": 2317.34, "erva": 2317.34, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8351", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "10/07/2026"}, {"pedido": 8368, "cliente": "GIRUS MERCANTIL LTDA - MIGUEL SUTIL", "valor": 641.66, "erva": 641.66, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8368 - 00066401", "descricao": "BOLETO BANCO BRB A. G. COM", "categoria": "VENDA À PRAZO", "vencimento": "22/07/2026"}, {"pedido": 8368, "cliente": "GIRUS MERCANTIL LTDA - MIGUEL SUTIL", "valor": 641.67, "erva": 641.67, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8368 - 00066402", "descricao": "BOLETO BANCO BRB A. G. COM", "categoria": "VENDA À PRAZO", "vencimento": "29/07/2026"}, {"pedido": 8368, "cliente": "GIRUS MERCANTIL LTDA - MIGUEL SUTIL", "valor": 641.67, "erva": 641.67, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8368 - 00066403", "descricao": "BOLETO BANCO BRB A. G. COM", "categoria": "VENDA À PRAZO", "vencimento": "05/08/2026"}, {"pedido": 8367, "cliente": "GIRUS MERCANTIL LTDA-AV BRASILIA", "valor": 525.0, "erva": 525.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8367 - 00066501", "descricao": "BOLETO BANCO BRB A. G. COM", "categoria": "VENDA À PRAZO", "vencimento": "22/07/2026"}, {"pedido": 8367, "cliente": "GIRUS MERCANTIL LTDA-AV BRASILIA", "valor": 525.0, "erva": 525.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8367 - 00066502", "descricao": "BOLETO BANCO BRB A. G. COM", "categoria": "VENDA À PRAZO", "vencimento": "29/07/2026"}, {"pedido": 8367, "cliente": "GIRUS MERCANTIL LTDA-AV BRASILIA", "valor": 525.0, "erva": 525.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8367 - 00066503", "descricao": "BOLETO BANCO BRB A. G. COM", "categoria": "VENDA À PRAZO", "vencimento": "05/08/2026"}, {"pedido": 8366, "cliente": "CATIA APARECIDA PEREIRA DA SILVA", "valor": 599.32, "erva": 599.32, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8366", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "01/07/2026"}, {"pedido": 8374, "cliente": "N. BEVILACQUA JUNIOR LTDA (AGUA BOA)", "valor": 4090.5, "erva": 4090.5, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8374 - 00051401", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "24/07/2026"}, {"pedido": 8374, "cliente": "N. BEVILACQUA JUNIOR LTDA (AGUA BOA)", "valor": 4090.5, "erva": 4090.5, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8374 - 00051402", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "31/07/2026"}, {"pedido": 8374, "cliente": "N. BEVILACQUA JUNIOR LTDA (AGUA BOA)", "valor": 4090.5, "erva": 4090.5, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8374 - 00051403", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "07/08/2026"}, {"pedido": 8374, "cliente": "N. BEVILACQUA JUNIOR LTDA (AGUA BOA)", "valor": 4090.5, "erva": 4090.5, "bebida": 0, "situacao": "Atrasada", "obs": "Ref. ao pedido de venda nº 8374 - 00051404", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "14/08/2026"}, {"pedido": 8372, "cliente": "TERERE MERCADO E BOUTIQUE COUNTRY LTDA", "valor": 1162.0, "erva": 1162.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8372 - 00040901", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "09/07/2026"}, {"pedido": 8372, "cliente": "TERERE MERCADO E BOUTIQUE COUNTRY LTDA", "valor": 1162.0, "erva": 1162.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8372 - 00040902", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "16/07/2026"}, {"pedido": 8380, "cliente": "BASEI CONSTRUCAO E ACABAMENTO LTDA", "valor": 1783.24, "erva": 1783.24, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8380 - NOSSO NUMERO 0000000000414", "descricao": "BOLETO COROLESKI SANTANDER", "categoria": "PENDENTE ANÁLISE", "vencimento": "07/08/2026"}, {"pedido": 8380, "cliente": "BASEI CONSTRUCAO E ACABAMENTO LTDA", "valor": 1783.26, "erva": 1783.26, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8380 - 00041201", "descricao": "BOLETO COROLESKI SANTANDER", "categoria": "PENDENTE ANÁLISE", "vencimento": "31/07/2026"}, {"pedido": 8379, "cliente": "EVERSON SERGIO DOS SANTOS SILVA", "valor": 11.9, "erva": 11.9, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8379", "descricao": "Carteira", "categoria": "VENDA À PRAZO", "vencimento": "01/08/2026"}, {"pedido": 8376, "cliente": "N. BEVILACQUA JUNIOR LTDA (CANARANA)", "valor": 4293.0, "erva": 4293.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8376 - 00051601", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "24/07/2026"}, {"pedido": 8376, "cliente": "N. BEVILACQUA JUNIOR LTDA (CANARANA)", "valor": 4293.0, "erva": 4293.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8376 - 00051602", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "31/07/2026"}, {"pedido": 8376, "cliente": "N. BEVILACQUA JUNIOR LTDA (CANARANA)", "valor": 4293.0, "erva": 4293.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8376 - 00051603", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "07/08/2026"}, {"pedido": 8376, "cliente": "N. BEVILACQUA JUNIOR LTDA (CANARANA)", "valor": 4293.0, "erva": 4293.0, "bebida": 0, "situacao": "Atrasada", "obs": "Ref. ao pedido de venda nº 8376 - 00051604", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "14/08/2026"}, {"pedido": 8377, "cliente": "N. BEVILACQUA JUNIOR LTDA (N XAVANTINA)", "valor": 3604.5, "erva": 3604.5, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8377 - 00051701", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "24/07/2026"}, {"pedido": 8377, "cliente": "N. BEVILACQUA JUNIOR LTDA (N XAVANTINA)", "valor": 3604.5, "erva": 3604.5, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8377 - 00051702", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "31/07/2026"}, {"pedido": 8377, "cliente": "N. BEVILACQUA JUNIOR LTDA (N XAVANTINA)", "valor": 3604.5, "erva": 3604.5, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8377 - 00051703", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "07/08/2026"}, {"pedido": 8377, "cliente": "N. BEVILACQUA JUNIOR LTDA (N XAVANTINA)", "valor": 3604.5, "erva": 3604.5, "bebida": 0, "situacao": "Atrasada", "obs": "Ref. ao pedido de venda nº 8377 - 00051704", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "14/08/2026"}, {"pedido": 8375, "cliente": "N. BEVILACQUA JUNIOR LTDA (QUERENCIA)", "valor": 4536.0, "erva": 4536.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8375 - 00051501", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "24/07/2026"}, {"pedido": 8375, "cliente": "N. BEVILACQUA JUNIOR LTDA (QUERENCIA)", "valor": 4536.0, "erva": 4536.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8375 - 00051502", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "31/07/2026"}, {"pedido": 8375, "cliente": "N. BEVILACQUA JUNIOR LTDA (QUERENCIA)", "valor": 4536.0, "erva": 4536.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8375 - 00051503", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "07/08/2026"}, {"pedido": 8375, "cliente": "N. BEVILACQUA JUNIOR LTDA (QUERENCIA)", "valor": 4536.0, "erva": 4536.0, "bebida": 0, "situacao": "Atrasada", "obs": "Ref. ao pedido de venda nº 8375 - 00051504", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "14/08/2026"}, {"pedido": 8378, "cliente": "ROMES DOS SANTOS FREITAS", "valor": 16.0, "erva": 16.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8378", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "02/07/2026"}, {"pedido": 8386, "cliente": "ELIOENA DOS SANTOS VERA", "valor": 1202.82, "erva": 1202.82, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8386", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "06/07/2026"}, {"pedido": 8381, "cliente": "ILDA ALVES BLOOT", "valor": 28.0, "erva": 28.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8381", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "07/07/2026"}, {"pedido": 8384, "cliente": "N. BEVILACQUA JUNIOR LTDA (NILO SHOP)", "valor": 3847.5, "erva": 3847.5, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8384 - 00051801", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "27/07/2026"}, {"pedido": 8384, "cliente": "N. BEVILACQUA JUNIOR LTDA (NILO SHOP)", "valor": 3847.5, "erva": 3847.5, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8384 - 00051802", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "03/08/2026"}, {"pedido": 8384, "cliente": "N. BEVILACQUA JUNIOR LTDA (NILO SHOP)", "valor": 3847.5, "erva": 3847.5, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8384 - 00051803", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "10/08/2026"}, {"pedido": 8384, "cliente": "N. BEVILACQUA JUNIOR LTDA (NILO SHOP)", "valor": 3847.5, "erva": 3847.5, "bebida": 0, "situacao": "Vencendo hoje", "obs": "Ref. ao pedido de venda nº 8384 - 00051804", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "17/08/2026"}, {"pedido": 8383, "cliente": "RAFAELA WOTTRICH", "valor": 329.8, "erva": 329.8, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8383", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "06/07/2026"}, {"pedido": 8382, "cliente": "ROMES DOS SANTOS FREITAS", "valor": 131.1, "erva": 131.1, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8382", "descricao": "Carteira", "categoria": "VENDA À PRAZO", "vencimento": "06/07/2026"}, {"pedido": 8385, "cliente": "ROSIMAR SANTOS DE FREITAS", "valor": 499.55, "erva": 499.55, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8385", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "20/07/2026"}, {"pedido": 8393, "cliente": "ADRIANO SOUZA GOMES", "valor": 609.0, "erva": 609.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8393", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "07/07/2026"}, {"pedido": 8390, "cliente": "DISTRIBUIDORA RONCADOR COMERCIO DE PROD ALIMENTICIOS LTDA", "valor": 1000.0, "erva": 1000.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8390 - 00051901", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "14/07/2026"}, {"pedido": 8390, "cliente": "DISTRIBUIDORA RONCADOR COMERCIO DE PROD ALIMENTICIOS LTDA", "valor": 1000.0, "erva": 1000.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8390 - 00051902", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "21/07/2026"}, {"pedido": 8390, "cliente": "DISTRIBUIDORA RONCADOR COMERCIO DE PROD ALIMENTICIOS LTDA", "valor": 1000.0, "erva": 1000.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8390 - 00051903", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "28/07/2026"}, {"pedido": 8392, "cliente": "KELWYS MIQUEIAS MORAIS DOS SANTOS", "valor": 368.0, "erva": 368.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8392", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "07/07/2026"}, {"pedido": 8389, "cliente": "LOVE PET RACOES E ACESS PARA ANIMAIS DE ESTIM LTDA", "valor": 974.0, "erva": 974.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8389", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "07/07/2026"}, {"pedido": 8391, "cliente": "ROSIMAR SANTOS DE FREITAS", "valor": 34.2, "erva": 34.2, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8391", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "07/07/2026"}, {"pedido": 8397, "cliente": "AGROFLORA COMERCIO E REPRESETACOES", "valor": 174.0, "erva": 174.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8397", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "22/07/2026"}, {"pedido": 8402, "cliente": "BLEND IMPORTS LTDA", "valor": 781.85, "erva": 781.85, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8402", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "08/07/2026"}, {"pedido": 8401, "cliente": "FELIPE DA MOTA REGASSO - FRANÇA", "valor": 319.0, "erva": 319.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8401", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "08/07/2026"}, {"pedido": 8400, "cliente": "FELIPE DA MOTA REGASSO - FRANÇA", "valor": 466.8, "erva": 466.8, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8400", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "08/07/2026"}, {"pedido": 8403, "cliente": "MERCADO CHEFF", "valor": 2538.0, "erva": 2538.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8403 - 00052001", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "22/07/2026"}, {"pedido": 8410, "cliente": "BRUNO LUCAS DOS REIS COSTA", "valor": 20.0, "erva": 20.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8410", "descricao": "Dinheiro do Caixa", "categoria": "VENDAS À VISTA", "vencimento": "09/07/2026"}, {"pedido": 8407, "cliente": "COMERCIAL CARAPA DE SECOS E MOLHADOS LTDA - PRIMA DO LESTE", "valor": 6482.4, "erva": 0, "bebida": 6482.4, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8407 - 00052101", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "25/07/2026"}, {"pedido": 8406, "cliente": "COMERCIAL CARAPA DE SECOS E MOLHADOS LTDA-COLIDER", "valor": 14191.2, "erva": 0, "bebida": 14191.2, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8406 - 00052201", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "25/07/2026"}, {"pedido": 8355, "cliente": "H. MENDES BRAGA & CIA LTDA EPP", "valor": 1263.13, "erva": 701.53, "bebida": 561.6, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8355", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "23/07/2026"}, {"pedido": 8355, "cliente": "H. MENDES BRAGA & CIA LTDA EPP", "valor": 1263.13, "erva": 701.53, "bebida": 561.6, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8355", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "16/07/2026"}, {"pedido": 8409, "cliente": "JOSE CACIO DA SILVA", "valor": 3647.62, "erva": 14.44, "bebida": 3633.18, "situacao": "Atrasada", "obs": "Ref. ao pedido de venda nº 8409", "descricao": "BOLETO SORRISO", "categoria": "PENDENTE ANÁLISE", "vencimento": "10/07/2026"}, {"pedido": 8408, "cliente": "ROHRIG E ROHRIG LTDA MEDIONAT", "valor": 1892.0, "erva": 1892.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8408", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "09/07/2026"}, {"pedido": 8411, "cliente": "ZERO GRAU PRODUCOES E EVENTOS LTDA", "valor": 1776.0, "erva": 0, "bebida": 1776.0, "situacao": "Atrasada", "obs": "Ref. ao pedido de venda nº 8411", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "PENDENTE ANÁLISE", "vencimento": "07/07/2026"}, {"pedido": 8411, "cliente": "ZERO GRAU PRODUCOES E EVENTOS LTDA", "valor": 1776.0, "erva": 0, "bebida": 1776.0, "situacao": "Atrasada", "obs": "Ref. ao pedido de venda nº 8411", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "PENDENTE ANÁLISE", "vencimento": "14/07/2026"}, {"pedido": 8415, "cliente": "COMERCIAL CARAPA DE SECOS E MOLHADOS LTDA - PRIMA DO LESTE", "valor": 9450.0, "erva": 9450.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8415 -  00052501", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "09/08/2026"}, {"pedido": 8352, "cliente": "ESSER COMERCIO VAREJISTA DE PRODUTOS ALIMENTICIOS E TABACARI", "valor": 235.0, "erva": 235.0, "bebida": 0, "situacao": "Atrasada", "obs": "Ref. ao pedido de venda nº 8352", "descricao": "Carteira", "categoria": "VENDA À PRAZO", "vencimento": "26/07/2026"}, {"pedido": 8354, "cliente": "IMPORTADOS CUIABA", "valor": 1570.8, "erva": 1570.8, "bebida": 0, "situacao": "Atrasada", "obs": "Ref. ao pedido de venda nº 8354", "descricao": "Carteira", "categoria": "VENDA À PRAZO", "vencimento": "13/07/2026"}, {"pedido": 8412, "cliente": "R V TESTA & CIA LTDA", "valor": 1680.0, "erva": 1680.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8412 - 00052301", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "06/08/2026"}, {"pedido": 8412, "cliente": "R V TESTA & CIA LTDA", "valor": 1680.0, "erva": 1680.0, "bebida": 0, "situacao": "Atrasada", "obs": "Ref. ao pedido de venda nº 8412 - 00052302", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "13/08/2026"}, {"pedido": 8413, "cliente": "R V TESTA & CIA LTDA", "valor": 2016.0, "erva": 2016.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8413 - 00052401", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "09/08/2026"}, {"pedido": 8404, "cliente": "TM COMERCIO DE TABACARIA E BEBIDAS LTDA", "valor": 3770.6, "erva": 3770.6, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8404", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "08/07/2026"}, {"pedido": 8417, "cliente": "ELIOENA DOS SANTOS VERA", "valor": 175.0, "erva": 175.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8417", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "13/07/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 13.31, "erva": 0, "bebida": 0, "situacao": "Pago", "obs": "REF. DEVOLUÇÃO DA SOBRA FEITO EM PIX PARA A COMPRA DO CAFE P/ BARRACÃO", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "RECEBIMENTO DE VENDAS", "vencimento": "13/07/2026"}, {"pedido": 8418, "cliente": "DENAIR CRISTINA ESTEVE FERREIRA DE ASSIS", "valor": 283.87, "erva": 283.87, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8418", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "13/07/2026"}, {"pedido": 8422, "cliente": "ESSER COMERCIO VAREJISTA DE PRODUTOS ALIMENTICIOS E TABACARI", "valor": 1158.51, "erva": 1158.51, "bebida": 0, "situacao": "Atrasada", "obs": "Ref. ao pedido de venda nº 8422", "descricao": "Carteira", "categoria": "VENDA À PRAZO", "vencimento": "13/08/2026"}, {"pedido": 8420, "cliente": "ROMES DOS SANTOS FREITAS", "valor": 43.5, "erva": 43.5, "bebida": 0, "situacao": "Atrasada", "obs": "Ref. ao pedido de venda nº 8420", "descricao": "Carteira", "categoria": "VENDA À PRAZO", "vencimento": "13/08/2026"}, {"pedido": 8424, "cliente": "ESSER COMERCIO VAREJISTA DE PRODUTOS ALIMENTICIOS E TABACARI", "valor": 130.0, "erva": 130.0, "bebida": 0, "situacao": "Atrasada", "obs": "Ref. ao pedido de venda nº 8424", "descricao": "Carteira", "categoria": "VENDA À PRAZO", "vencimento": "14/08/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 26300.0, "erva": 0, "bebida": 0, "situacao": "Pago", "obs": "REF AO FRETE JUBA.", "descricao": "Boleto", "categoria": "FRETE PAGO CARRETA", "vencimento": "23/07/2026"}, {"pedido": 8425, "cliente": "SAO JOSE SUPERMERCADO LTDA", "valor": 1698.6, "erva": 0, "bebida": 1698.6, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8425", "descricao": "Carteira", "categoria": "PENDENTE ANÁLISE", "vencimento": "15/07/2026"}, {"pedido": 8426, "cliente": "POSTO MACEDO JACIARA LTDA", "valor": 2405.81, "erva": 2405.81, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8426 - 008426/01", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "23/07/2026"}, {"pedido": 1246, "cliente": "Não identificado", "valor": 7095.0, "erva": 0, "bebida": 0, "situacao": "Atrasada", "obs": "REF AO PED 1246 ESSENCIATTI.", "descricao": "Boleto", "categoria": "-", "vencimento": "26/06/2026"}, {"pedido": 8430, "cliente": "CASA DE CARNES CHAPECO LTDA", "valor": 875.0, "erva": 875.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8430 - 00042902", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "07/08/2026"}, {"pedido": 8430, "cliente": "CASA DE CARNES CHAPECO LTDA", "valor": 875.0, "erva": 875.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8430 - 00042901", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "24/07/2026"}, {"pedido": 8428, "cliente": "L.J.MULLER & CIA LTDA", "valor": 2272.95, "erva": 2272.95, "bebida": 0, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8428", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "21/08/2026"}, {"pedido": 8428, "cliente": "L.J.MULLER & CIA LTDA", "valor": 2272.95, "erva": 2272.95, "bebida": 0, "situacao": "Atrasada", "obs": "Ref. ao pedido de venda nº 8428", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "14/08/2026"}, {"pedido": 8429, "cliente": "PIOVEZAN DE SOUZA &amp; CIA LTDA", "valor": 1468.94, "erva": 1468.94, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8429 - 00042801", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "14/08/2026"}, {"pedido": 8429, "cliente": "PIOVEZAN DE SOUZA &amp; CIA LTDA", "valor": 1468.96, "erva": 1468.96, "bebida": 0, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8429 - 00042802", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "21/08/2026"}, {"pedido": 8434, "cliente": "EVERSON SERGIO DOS SANTOS SILVA", "valor": 29.0, "erva": 29.0, "bebida": 0, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8434", "descricao": "Carteira", "categoria": "VENDA À PRAZO", "vencimento": "19/08/2026"}, {"pedido": 8437, "cliente": "COMERCIO DE MATERIAIS DE CONSTRUCAO S. H. M. LTDA", "valor": 2518.8, "erva": 2518.8, "bebida": 0, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8437 - 00043601", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "18/08/2026"}, {"pedido": 8437, "cliente": "COMERCIO DE MATERIAIS DE CONSTRUCAO S. H. M. LTDA", "valor": 2518.8, "erva": 2518.8, "bebida": 0, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8437 - 00043602", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "01/09/2026"}, {"pedido": 8431, "cliente": "DIEGO LINHARES DA SILVA", "valor": 526.0, "erva": 526.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8431", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "20/07/2026"}, {"pedido": 8435, "cliente": "GUILHERME ALVES DE OLIVEIRA MENDES DA SILVA", "valor": 20.0, "erva": 20.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8435", "descricao": "Dinheiro do Caixa", "categoria": "VENDAS À VISTA", "vencimento": "22/07/2026"}, {"pedido": 8435, "cliente": "GUILHERME ALVES DE OLIVEIRA MENDES DA SILVA", "valor": 680.0, "erva": 680.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8435", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "21/07/2026"}, {"pedido": 8438, "cliente": "HEEMANN SUPERMERCADO LTDA", "valor": 2994.5, "erva": 2994.5, "bebida": 0, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8438 - 00043501", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "18/08/2026"}, {"pedido": 8438, "cliente": "HEEMANN SUPERMERCADO LTDA", "valor": 2994.5, "erva": 2994.5, "bebida": 0, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8438 - 00043502", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "01/09/2026"}, {"pedido": 8436, "cliente": "KING TABACARIA LTDA (ROBINHO)", "valor": 2895.0, "erva": 2895.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8436", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "21/07/2026"}, {"pedido": 8439, "cliente": "ANTÔNIO JOSÉ DE OLIVEIRA BORRACHARIA - M", "valor": 470.72, "erva": 470.72, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8439 - 00043701", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "29/07/2026"}, {"pedido": 8439, "cliente": "ANTÔNIO JOSÉ DE OLIVEIRA BORRACHARIA - M", "valor": 470.72, "erva": 470.72, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8439 - 00043702", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "05/08/2026"}, {"pedido": 8440, "cliente": "EVERSON SERGIO DOS SANTOS SILVA", "valor": 278.73, "erva": 278.73, "bebida": 0, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8440", "descricao": "Carteira", "categoria": "VENDA À PRAZO", "vencimento": "21/08/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 500.0, "erva": 0, "bebida": 0, "situacao": "Pago", "obs": "REF. ADIANTAMENTO SALARIAL", "descricao": "Carteira", "categoria": "ADIANTAMENTO FUNCIONÁRIO COMPRA", "vencimento": "22/07/2026"}, {"pedido": 8443, "cliente": "CATIA APARECIDA PEREIRA DA SILVA", "valor": 608.37, "erva": 608.37, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8443", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "22/07/2026"}, {"pedido": 8442, "cliente": "DUNK SUPLEMENTOS LTDA", "valor": 1594.08, "erva": 1594.08, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8442", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "22/07/2026"}, {"pedido": 8448, "cliente": "IMPORTADOS CUIABA", "valor": 2990.0, "erva": 2990.0, "bebida": 0, "situacao": "Atrasada", "obs": "Ref. ao pedido de venda nº 8448", "descricao": "Carteira", "categoria": "VENDA À PRAZO", "vencimento": "07/08/2026"}, {"pedido": 8449, "cliente": "LUMI MINIMERCADO LTDA", "valor": 332.0, "erva": 332.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8449", "descricao": "Dinheiro do Caixa", "categoria": "VENDAS À VISTA", "vencimento": "23/07/2026"}, {"pedido": 8446, "cliente": "ROMES DOS SANTOS FREITAS", "valor": 15.0, "erva": 15.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8446", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "22/07/2026"}, {"pedido": 8444, "cliente": "COMERCIO VAREJISTA REI DO TABACO LTDA", "valor": 1240.0, "erva": 1240.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8444", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "22/07/2026"}, {"pedido": 8450, "cliente": "PABLO PEDROSA DOS SANTOS", "valor": 2495.47, "erva": 2495.47, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8450", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "23/07/2026"}, {"pedido": 8452, "cliente": "ROMES DOS SANTOS FREITAS", "valor": 36.7, "erva": 36.7, "bebida": 0, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8452", "descricao": "Carteira", "categoria": "VENDA À PRAZO", "vencimento": "23/08/2026"}, {"pedido": 8458, "cliente": "CARLOS ALBERTO MARTELLI", "valor": 840.0, "erva": 840.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8458", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "27/07/2026"}, {"pedido": 8457, "cliente": "CARLOS ALBERTO MARTELLI", "valor": 1205.8, "erva": 1205.8, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8457", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "27/07/2026"}, {"pedido": 8456, "cliente": "Consumidor Final", "valor": 600.0, "erva": 600.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8456", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "24/07/2026"}, {"pedido": 8459, "cliente": "RENAN SILVA DE JESUS", "valor": 155.0, "erva": 155.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8459", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "27/07/2026"}, {"pedido": 8453, "cliente": "TECNOPARTS TINTAS E FERRAGENS LTDA - EPP", "valor": 969.85, "erva": 969.85, "bebida": 0, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8453 - 00044401", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "21/08/2026"}, {"pedido": 8453, "cliente": "TECNOPARTS TINTAS E FERRAGENS LTDA - EPP", "valor": 969.85, "erva": 969.85, "bebida": 0, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8453 - 00044402", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "28/08/2026"}, {"pedido": 8462, "cliente": "IANDER DOS SANTOS DE CARVALHO E CIA LTDA ME", "valor": 696.0, "erva": 696.0, "bebida": 0, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8462 - 00044701", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "25/08/2026"}, {"pedido": 8462, "cliente": "IANDER DOS SANTOS DE CARVALHO E CIA LTDA ME", "valor": 696.0, "erva": 696.0, "bebida": 0, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8462 - 00044702", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "01/09/2026"}, {"pedido": 8461, "cliente": "ILDA ALVES BLOOT", "valor": 120.1, "erva": 120.1, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8461", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "29/07/2026"}, {"pedido": 8466, "cliente": "ECONOMIA COMERCIO E INDUSTRIA DE ALIMENTOS LTDA", "valor": 1619.4, "erva": 1619.4, "bebida": 0, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8466 - 00044901", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "26/08/2026"}, {"pedido": 8466, "cliente": "ECONOMIA COMERCIO E INDUSTRIA DE ALIMENTOS LTDA", "valor": 1619.4, "erva": 1619.4, "bebida": 0, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8466 - 00044902", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "02/09/2026"}, {"pedido": 8463, "cliente": "S. A. PEREIRA MACIEL ME", "valor": 2199.9, "erva": 2199.9, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8463", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "29/07/2026"}, {"pedido": 8472, "cliente": "BLEND IMPORTS LTDA", "valor": 1560.0, "erva": 1560.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8472", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "30/07/2026"}, {"pedido": 8471, "cliente": "CARLOS ALBERTO MARTELLI", "valor": 293.88, "erva": 293.88, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8471", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "30/07/2026"}, {"pedido": 8470, "cliente": "CARLOS ALBERTO MARTELLI", "valor": 1680.0, "erva": 1680.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8470", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "30/07/2026"}, {"pedido": 8468, "cliente": "PETERSON ANTUNES ALVES", "valor": 712.0, "erva": 712.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8468", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "30/07/2026"}, {"pedido": 8469, "cliente": "RAYANE OLIVEIRA FERREIRA DE ALMEIDA", "valor": 725.59, "erva": 725.59, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8469", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "30/07/2026"}, {"pedido": 8479, "cliente": "CAMPO NOVO COMERCIAL LTDA", "valor": 3486.0, "erva": 3486.0, "bebida": 0, "situacao": "Vencendo hoje", "obs": "Ref. ao pedido de venda nº 8479 - 00053501", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "17/08/2026"}, {"pedido": 8480, "cliente": "LEONARDO DIAS BATISTA", "valor": 374.0, "erva": 374.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8480", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "03/08/2026"}, {"pedido": 8478, "cliente": "REAL ATACADISTA CAMPO NOVO LTDA", "valor": 1494.0, "erva": 1494.0, "bebida": 0, "situacao": "Vencendo hoje", "obs": "Ref. ao pedido de venda nº 8478 - 00053401", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "17/08/2026"}, {"pedido": 8477, "cliente": "RENAN SILVA DE JESUS", "valor": 94.0, "erva": 94.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8477", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "03/08/2026"}, {"pedido": 8475, "cliente": "RENAN SILVA DE JESUS", "valor": 1150.0, "erva": 1150.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8475", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "03/08/2026"}, {"pedido": 8484, "cliente": "DIEGO LINHARES DA SILVA", "valor": 99.0, "erva": 99.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8484", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "04/08/2026"}, {"pedido": 8486, "cliente": "KING TABACARIA LTDA (ROBINHO)", "valor": 689.0, "erva": 689.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8486", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "05/08/2026"}, {"pedido": 8482, "cliente": "LOPES COMERCIO DE AREIA LTDA", "valor": 919.99, "erva": 919.99, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8482", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "03/08/2026"}, {"pedido": 8487, "cliente": "MARTINS & MARTINS LTDA (CENTRO)", "valor": 2636.1, "erva": 0, "bebida": 2636.1, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8487", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "05/08/2026"}, {"pedido": 8488, "cliente": "MARTINS & MARTINS LTDA (JARDIM BARCELONA)", "valor": 8787.0, "erva": 0, "bebida": 8787.0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8488", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "05/08/2026"}, {"pedido": 8490, "cliente": "MARTINS & MARTINS LTDA (JARDIM BOTANICO)", "valor": 3954.15, "erva": 0, "bebida": 3954.15, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8490", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "05/08/2026"}, {"pedido": 8492, "cliente": "MARTINS & MARTINS LTDA (JARDIM PRIMAVERA)", "valor": 2636.1, "erva": 0, "bebida": 2636.1, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8492", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "05/08/2026"}, {"pedido": 8491, "cliente": "MARTINS & MARTINS LTDA (SETOR COMERCIAL)", "valor": 5272.2, "erva": 0, "bebida": 5272.2, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8491", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "05/08/2026"}, {"pedido": 8489, "cliente": "MARTINS & MARTINS LTDA(PQ UNIVERSITARIO)", "valor": 6590.25, "erva": 0, "bebida": 6590.25, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8489", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "05/08/2026"}, {"pedido": 8494, "cliente": "MARTINS & MARTINS NETO LTDA (CARANDA BOSQUE)", "valor": 3954.15, "erva": 0, "bebida": 3954.15, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8494", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "05/08/2026"}, {"pedido": 8493, "cliente": "MARTINS & MARTINS NETO LTDA (CHACARAS)", "valor": 10983.75, "erva": 0, "bebida": 10983.75, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8493", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "05/08/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 12.18, "erva": 0, "bebida": 0, "situacao": "Pago", "obs": "REF. COMPROVANTE REF NF 536\nEMITIDA PARA O PETERSON", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "ACRESCIMOS DE RECEBIMENTO", "vencimento": "04/08/2026"}, {"pedido": 8483, "cliente": "PIONEIROS TERERE E CHIMARRAO LTDA", "valor": 1680.0, "erva": 1680.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8483", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "04/08/2026"}, {"pedido": 8497, "cliente": "CONSUMIDOR", "valor": 75.0, "erva": 75.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8497", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "05/08/2026"}, {"pedido": 8496, "cliente": "JOANICE DE SOUZA DAS NEVES", "valor": 487.67, "erva": 487.67, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8496", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "05/08/2026"}, {"pedido": 8495, "cliente": "ROMES DOS SANTOS FREITAS", "valor": 38.0, "erva": 38.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8495", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "04/08/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 229.0, "erva": 0, "bebida": 0, "situacao": "Atrasada", "obs": "IPVA GOL PARCELA 3/4.", "descricao": "-", "categoria": "-", "vencimento": "06/08/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 245.07, "erva": 0, "bebida": 0, "situacao": "Atrasada", "obs": "SEGURO GOL.", "descricao": "-", "categoria": "-", "vencimento": "05/08/2026"}, {"pedido": 8500, "cliente": "ELFE DISTRIBUIDORA LTDA", "valor": 1732.19, "erva": 609.0, "bebida": 1123.19, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8500", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "29/07/2026"}, {"pedido": 8500, "cliente": "ELFE DISTRIBUIDORA LTDA", "valor": 1732.21, "erva": 609.0, "bebida": 1123.21, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8500", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "14/07/2026"}, {"pedido": 8502, "cliente": "PRIME BOI GRILL - BOUTIQUE DA CARNE EXPRESS LTDA", "valor": 510.6, "erva": 510.6, "bebida": 0, "situacao": "Atrasada", "obs": "Ref. ao pedido de venda nº 8502", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "13/08/2026"}, {"pedido": 8441, "cliente": "ROMY SCHNEIDER (ADMINISTRATIVO)", "valor": 14.5, "erva": 14.5, "bebida": 0, "situacao": "Pago", "obs": "PED 8441.", "descricao": "-", "categoria": "ADIANTAMENTO FUNCIONÁRIO COMPRA", "vencimento": "05/08/2026"}, {"pedido": 8421, "cliente": "ROMY SCHNEIDER (ADMINISTRATIVO)", "valor": 75.45, "erva": 75.45, "bebida": 0, "situacao": "Pago", "obs": "PED 8421", "descricao": "-", "categoria": "ADIANTAMENTO FUNCIONÁRIO COMPRA", "vencimento": "05/08/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 366.66, "erva": 0, "bebida": 0, "situacao": "Pago", "obs": "ALUGUEL.", "descricao": "-", "categoria": "ADIANTAMENTO FUNCIONÁRIO COMPRA", "vencimento": "05/08/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 366.66, "erva": 0, "bebida": 0, "situacao": "Em aberto", "obs": "ALUGUEL.", "descricao": "-", "categoria": "ADIANTAMENTO FUNCIONÁRIO COMPRA", "vencimento": "05/09/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 366.66, "erva": 0, "bebida": 0, "situacao": "Em aberto", "obs": "ALUGUEL.", "descricao": "-", "categoria": "ADIANTAMENTO FUNCIONÁRIO COMPRA", "vencimento": "05/10/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 883.0, "erva": 0, "bebida": 0, "situacao": "Pago", "obs": "ADIANTAMENTO SALARIAL.", "descricao": "-", "categoria": "BEBIDA CUIABA", "vencimento": "05/08/2026"}, {"pedido": 8506, "cliente": "ROMY SCHNEIDER (ADMINISTRATIVO)", "valor": 14.5, "erva": 14.5, "bebida": 0, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8506", "descricao": "Carteira", "categoria": "VENDA À PRAZO", "vencimento": "06/09/2026"}, {"pedido": "", "cliente": "Não identificado", "valor": 842.37, "erva": 0, "bebida": 0, "situacao": "Em aberto", "obs": "REF. JUROS E MULTA DO PEDIDO DE VENDA 6740", "descricao": "-", "categoria": "ACRESCIMOS DE RECEBIMENTO", "vencimento": "10/09/2026"}, {"pedido": 8509, "cliente": "RENAN SILVA DE JESUS", "valor": 569.0, "erva": 569.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8509", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "10/08/2026"}, {"pedido": 8510, "cliente": "RODRIGO DE OLIVEIRA TEIXEIRA MEDEIROS", "valor": 1023.97, "erva": 1023.97, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8510", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "10/08/2026"}, {"pedido": 8514, "cliente": "DISTRIBUIDORA MARINGA LTDA", "valor": 16080.0, "erva": 16080.0, "bebida": 0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8514", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "07/08/2026"}, {"pedido": 8511, "cliente": "SUPER MACHADO COMERCIO DE PRODUTOS ALIMENTICIOS LTDA", "valor": 10121.8, "erva": 5441.8, "bebida": 4680.0, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8511", "descricao": "BOLETO SCHNEIDER", "categoria": "PENDENTE ANÁLISE", "vencimento": "03/09/2026"}, {"pedido": 8513, "cliente": "SUPER MACHADO COMERCIO DE PRODUTOS ALIMENTICIOS LTDA", "valor": 3870.5, "erva": 2372.9, "bebida": 1497.6, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8513", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "07/08/2026"}, {"pedido": 8512, "cliente": "SUPER MACHADO COMERCIO DE PRODUTOS ALIMENTICIOS LTDA", "valor": 2760.5, "erva": 2198.9, "bebida": 561.6, "situacao": "Pago", "obs": "Ref. ao pedido de venda nº 8512", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "07/08/2026"}, {"pedido": 8525, "cliente": "COMERCIAL CARAPA DE SECOS E MOLHADOS LTDA - PRIMA DO LESTE", "valor": 1211.83, "erva": 1211.83, "bebida": 0, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8525 - 00054001", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "11/09/2026"}, {"pedido": 8517, "cliente": "COMERCIAL CARAPA DE SECOS E MOLHADOS LTDA - PRIMA DO LESTE", "valor": 8409.6, "erva": 0, "bebida": 8409.6, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8517 - 00054401", "descricao": "BOLETO SCHNEIDER", "categoria": "PENDENTE ANÁLISE", "vencimento": "31/08/2026"}, {"pedido": 8518, "cliente": "COMERCIAL CARAPA DE SECOS E MOLHADOS LTDA-COLIDER", "valor": 15067.2, "erva": 0, "bebida": 15067.2, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8518 -  00054501", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "31/08/2026"}, {"pedido": 8526, "cliente": "COMERCIAL CARAPA DE SECOS E MOLHADOS LTDA-COLIDER", "valor": 2104.57, "erva": 2104.57, "bebida": 0, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8526 - 00053801", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "11/09/2026"}, {"pedido": 8523, "cliente": "COMERCIAL CARAPA DE SECOS E MOLHADOS LTDA-MATUPA", "valor": 13043.42, "erva": 13043.42, "bebida": 0, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8523 - 00054201", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "11/09/2026"}, {"pedido": 8520, "cliente": "ESSER COMERCIO VAREJISTA DE PRODUTOS ALIMENTICIOS E TABACARI", "valor": 260.0, "erva": 260.0, "bebida": 0, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8520", "descricao": "Carteira", "categoria": "VENDA À PRAZO", "vencimento": "12/09/2026"}, {"pedido": 8527, "cliente": "FENIX DISTRIBUIDORA ALIMENTICIA LTDA", "valor": 840.0, "erva": 840.0, "bebida": 0, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8527", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "03/09/2026"}, {"pedido": 8521, "cliente": "MARTINS & BRUCHMAM MARTINS LTDA (LUCAS DO RIO VERDE)", "valor": 11814.44, "erva": 11814.44, "bebida": 0, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8521 - 00054301", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "11/09/2026"}, {"pedido": 8522, "cliente": "MARTINS & BRUCHMAM MARTINS LTDA-CONFRESA", "valor": 11165.12, "erva": 11165.12, "bebida": 0, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8522 - 00054101", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "11/09/2026"}, {"pedido": 8524, "cliente": "MARTINS & BRUCHMAM MARTINS LTDA-FLORESTA", "valor": 7711.6, "erva": 7711.6, "bebida": 0, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8524 - 00053901", "descricao": "BOLETO SCHNEIDER", "categoria": "VENDA À PRAZO", "vencimento": "11/09/2026"}, {"pedido": 8519, "cliente": "NEVES E SILVA DISTRIBUIDORA E CAFETERIA LTDA", "valor": 542.0, "erva": 542.0, "bebida": 0, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8519", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "27/08/2026"}, {"pedido": 8538, "cliente": "ARAO PEREIRA DE SA LTDA", "valor": 1220.81, "erva": 1220.81, "bebida": 0, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8538 - 00046401", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "24/08/2026"}, {"pedido": 8538, "cliente": "ARAO PEREIRA DE SA LTDA", "valor": 1220.82, "erva": 1220.82, "bebida": 0, "situacao": "Em aberto", "obs": "Ref. ao pedido de venda nº 8538 -  00046402", "descricao": "BOLETO BRADESCO COROLESKI", "categoria": "VENDA À PRAZO", "vencimento": "31/08/2026"}, {"pedido": 8533, "cliente": "ESTACAO RURAL LTDA", "valor": 1307.47, "erva": 1307.47, "bebida": 0, "situacao": "Atrasada", "obs": "Ref. ao pedido de venda nº 8533", "descricao": "PIX 57.050.487/0001-34 BRADESCO COROLESKI", "categoria": "VENDAS À VISTA", "vencimento": "14/08/2026"}]
+</script>
+<script>
+// ============================================================
+// Fechamento Financeiro — Ervas & Bebidas — dashboard logic
+// ============================================================
+
+const RAW = JSON.parse(document.getElementById('dados-json').textContent);
+
+const fmtBRL = (v) => 'R$ ' + (v || 0).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+const fmtPct = (v) => (v*100).toLocaleString('pt-BR', {minimumFractionDigits:1, maximumFractionDigits:1}) + '%';
+
+// ---------- date parsing dd/mm/yyyy -> sortable ----------
+function dateKey(s){
+  if(!s) return 0;
+  const m = String(s).match(/(\d{2})\/(\d{2})\/(\d{4})/);
+  if(!m) return 0;
+  return parseInt(m[3]+m[2]+m[1], 10);
+}
+
+// ---------- aggregates ----------
+const totalGeral = RAW.reduce((a,r)=>a+r.valor, 0);
+const totalErva = RAW.reduce((a,r)=>a+r.erva, 0);
+const totalBebida = RAW.reduce((a,r)=>a+r.bebida, 0);
+const totalNC = RAW.reduce((a,r)=> a + ((r.erva===0 && r.bebida===0) ? r.valor : 0), 0);
+
+const SITUACOES = ['Pago','Atrasada','Em aberto','Parcial','Vencendo hoje'];
+const sitStats = {};
+SITUACOES.forEach(s=>{ sitStats[s] = {count:0, valor:0, erva:0, bebida:0, nc:0}; });
+RAW.forEach(r=>{
+  const s = sitStats[r.situacao] || (sitStats[r.situacao] = {count:0,valor:0,erva:0,bebida:0,nc:0});
+  s.count++; s.valor += r.valor; s.erva += r.erva; s.bebida += r.bebida;
+  if(r.erva===0 && r.bebida===0) s.nc += r.valor;
+});
+
+// top10 pedidos (aggregate installments by pedido)
+const pedidoAgg = {};
+RAW.forEach(r=>{
+  if(!r.pedido) return;
+  const key = r.pedido;
+  if(!pedidoAgg[key]) pedidoAgg[key] = {pedido:r.pedido, cliente:r.cliente, valor:0};
+  pedidoAgg[key].valor += r.valor;
+});
+const top10 = Object.values(pedidoAgg).sort((a,b)=>b.valor-a.valor).slice(0,10);
+
+// derived lists
+const atraso = RAW.filter(r=>r.situacao==='Atrasada')
+  .map(r=>({pedido:r.pedido, cliente:r.cliente, valor:r.valor, vencimento:r.vencimento}))
+  .sort((a,b)=>b.valor-a.valor);
+
+function classedList(situacao, campo){
+  return RAW.filter(r=>r.situacao===situacao && r[campo] > 0)
+    .map(r=>({pedido:r.pedido, cliente:r.cliente, valor:r[campo], vencimento:r.vencimento}))
+    .sort((a,b)=>b.valor-a.valor);
+}
+const abertoErvas = classedList('Em aberto','erva');
+const abertoBebidas = classedList('Em aberto','bebida');
+const pagosErvas = classedList('Pago','erva');
+const pagosBebidas = classedList('Pago','bebida');
+
+function chronoList(campo){
+  return RAW.filter(r=>r[campo] > 0)
+    .map(r=>({pedido:r.pedido, cliente:r.cliente, valor:r[campo], situacao:r.situacao, vencimento:r.vencimento}))
+    .sort((a,b)=>dateKey(a.vencimento)-dateKey(b.vencimento));
+}
+const cronErvas = chronoList('erva');
+const cronBebidas = chronoList('bebida');
+
+// ============================================================
+// RENDER: header ratio bar + legend
+// ============================================================
+function renderHeader(){
+  const bar = document.getElementById('ratioBar');
+  const legend = document.getElementById('ratioLegend');
+  const segs = [
+    {label:'Ervas', val:totalErva, color:'#4C9A5E'},
+    {label:'Bebidas', val:totalBebida, color:'#3E86D6'},
+    {label:'Não classificado', val:totalNC, color:'#6B707A'},
+  ];
+  bar.innerHTML = segs.map(s => `<div class="ratio-seg" style="width:${(s.val/totalGeral*100).toFixed(2)}%; background:${s.color};"></div>`).join('');
+  legend.innerHTML = segs.map(s => `<span><span class="dot" style="background:${s.color}"></span>${s.label} · ${fmtBRL(s.val)} (${fmtPct(s.val/totalGeral)})</span>`).join('');
+  document.getElementById('baseInfo').textContent = `base: relatorio_17_08_2026 · ${RAW.length} lançamentos · total R$ ${totalGeral.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
+}
+
+// ============================================================
+// TABS
+// ============================================================
+const TABS = [
+  {id:'resumo', label:'Resumo'},
+  {id:'atraso', label:'Em Atraso'},
+  {id:'aberto-ervas', label:'Aberto · Ervas'},
+  {id:'aberto-bebidas', label:'Aberto · Bebidas'},
+  {id:'pagos-ervas', label:'Pagos · Ervas'},
+  {id:'pagos-bebidas', label:'Pagos · Bebidas'},
+  {id:'cron-ervas', label:'Cronológico · Ervas'},
+  {id:'cron-bebidas', label:'Cronológico · Bebidas'},
+  {id:'todos', label:'Todos os Lançamentos'},
+];
+
+function renderTabs(){
+  const tabsEl = document.getElementById('tabs');
+  tabsEl.innerHTML = TABS.map((t,i)=>`<button class="tab-btn${i===0?' active':''}" data-tab="${t.id}">${t.label}</button>`).join('');
+  tabsEl.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      tabsEl.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+      document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+      window.scrollTo({top:0, behavior:'instant'});
+    });
+  });
+}
+
+// ============================================================
+// RESUMO PANEL
+// ============================================================
+function pillFor(sit){
+  const map = {'Pago':'pill-pago','Atrasada':'pill-atraso','Em aberto':'pill-aberto','Parcial':'pill-parcial','Vencendo hoje':'pill-vencendo'};
+  return `<span class="pill ${map[sit]||''}">${sit}</span>`;
+}
+
+function renderResumo(container){
+  let html = '';
+
+  // KPI cards
+  html += `<div class="kpi-grid">
+    <div class="kpi-card"><div class="kpi-label">Total Geral</div><div class="kpi-value">${fmtBRL(totalGeral)}</div><div class="kpi-pct">${RAW.length} lançamentos</div></div>
+    <div class="kpi-card c-erva"><div class="kpi-label">Ervas</div><div class="kpi-value">${fmtBRL(totalErva)}</div><div class="kpi-pct">${fmtPct(totalErva/totalGeral)} do total</div></div>
+    <div class="kpi-card c-bebida"><div class="kpi-label">Bebidas</div><div class="kpi-value">${fmtBRL(totalBebida)}</div><div class="kpi-pct">${fmtPct(totalBebida/totalGeral)} do total</div></div>
+    <div class="kpi-card c-nc"><div class="kpi-label">Não Classificado</div><div class="kpi-value">${fmtBRL(totalNC)}</div><div class="kpi-pct">${fmtPct(totalNC/totalGeral)} do total</div></div>
+  </div>`;
+
+  // situacao summary
+  html += `<div class="section-title"><h2>Resumo por Situação</h2></div>`;
+  html += `<table class="summary-table"><thead><tr><th>Situação</th><th style="text-align:right">Qtd.</th><th style="text-align:right">Valor Total</th><th style="text-align:right">% do Total</th></tr></thead><tbody>`;
+  SITUACOES.forEach(s=>{
+    const d = sitStats[s];
+    if(!d || d.count===0) return;
+    html += `<tr><td>${pillFor(s)}</td><td class="num">${d.count}</td><td class="num">${fmtBRL(d.valor)}</td><td class="num">${fmtPct(d.valor/totalGeral)}</td></tr>`;
+  });
+  html += `<tr class="total-row"><td>TOTAL</td><td class="num">${RAW.length}</td><td class="num">${fmtBRL(totalGeral)}</td><td class="num">100,0%</td></tr>`;
+  html += `</tbody></table>`;
+
+  // erva x bebida por situacao
+  html += `<div class="section-title"><h2>Ervas × Bebidas por Situação</h2></div>`;
+  html += `<table class="summary-table"><thead><tr><th>Situação</th><th style="text-align:right">Ervas</th><th style="text-align:right">Bebidas</th><th style="text-align:right">Não Classif.</th></tr></thead><tbody>`;
+  SITUACOES.forEach(s=>{
+    const d = sitStats[s];
+    if(!d || d.count===0) return;
+    html += `<tr><td>${pillFor(s)}</td><td class="num">${fmtBRL(d.erva)}</td><td class="num">${fmtBRL(d.bebida)}</td><td class="num">${fmtBRL(d.nc)}</td></tr>`;
+  });
+  html += `<tr class="total-row"><td>TOTAL</td><td class="num">${fmtBRL(totalErva)}</td><td class="num">${fmtBRL(totalBebida)}</td><td class="num">${fmtBRL(totalNC)}</td></tr>`;
+  html += `</tbody></table>`;
+
+  // top 10
+  html += `<div class="section-title"><h2>Top 10 Maiores Pedidos</h2></div>`;
+  html += `<table class="summary-table"><thead><tr><th>Nº Pedido</th><th>Cliente</th><th style="text-align:right">Valor Total</th></tr></thead><tbody>`;
+  top10.forEach(p=>{
+    html += `<tr><td class="mono">#${p.pedido}</td><td>${p.cliente||'—'}</td><td class="num">${fmtBRL(p.valor)}</td></tr>`;
+  });
+  html += `</tbody></table>`;
+
+  html += `<div class="footnote">Classificação de Ervas/Bebidas obtida por produto (PEDIDOS_DE_VENDA), com fallback proporcional a partir da planilha de fechamento anterior quando o pedido não constava na exportação de produtos. Itens sem pedido de venda associado (aluguel, IPVA, adiantamentos, renegociações etc.) permanecem em "Não Classificado".</div>`;
+
+  container.innerHTML = html;
+}
+
+// ============================================================
+// SIMPLE LIST PANEL (atraso / aberto / pagos)
+// ============================================================
+function renderListPanel(container, data, opts){
+  const total = data.reduce((a,r)=>a+r.valor,0);
+  const wrapId = opts.id;
+  container.innerHTML = `
+    <div class="section-title"><h2>${opts.title}</h2><span class="count">${data.length} pedidos</span></div>
+    <div class="controls-row">
+      <input class="search-input" type="text" placeholder="Buscar por cliente ou nº do pedido..." id="search-${wrapId}">
+      <div class="total-chip">Total: ${fmtBRL(total)}</div>
+    </div>
+    <div class="table-scroll">
+      <table class="data-table card-mode" id="table-${wrapId}">
+        <thead>
+          <tr>
+            <th data-key="pedido">Nº Pedido <span class="arrow">▾</span></th>
+            <th data-key="cliente">Cliente <span class="arrow">▾</span></th>
+            <th data-key="valor" style="text-align:right">Valor (R$) <span class="arrow">▾</span></th>
+            <th data-key="vencimento" style="text-align:right">Vencimento <span class="arrow">▾</span></th>
+          </tr>
+        </thead>
+        <tbody id="tbody-${wrapId}"></tbody>
+      </table>
+    </div>
+  `;
+
+  let sortKey = 'valor', sortDir = -1;
+  let filterText = '';
+
+  function draw(){
+    let rows = data.filter(r=>{
+      if(!filterText) return true;
+      const hay = (String(r.pedido||'') + ' ' + (r.cliente||'')).toLowerCase();
+      return hay.includes(filterText);
+    });
+    rows = rows.slice().sort((a,b)=>{
+      let va = a[sortKey], vb = b[sortKey];
+      if(sortKey==='vencimento'){ va = dateKey(va); vb = dateKey(vb); }
+      if(typeof va === 'string'){ va = va.toLowerCase(); vb = (vb||'').toLowerCase(); }
+      if(va < vb) return -1*sortDir;
+      if(va > vb) return 1*sortDir;
+      return 0;
+    });
+    const tbody = document.getElementById('tbody-'+wrapId);
+    if(rows.length===0){
+      tbody.innerHTML = `<tr><td colspan="4" class="empty-note">Nenhum resultado encontrado.</td></tr>`;
+    } else {
+      tbody.innerHTML = rows.map(r=>`
+        <tr>
+          <td class="mono" data-label="Pedido">${r.pedido? '#'+r.pedido : '—'}</td>
+          <td class="wrap-cell" data-label="Cliente">${r.cliente||'Não identificado'}</td>
+          <td class="num" data-label="Valor">${fmtBRL(r.valor)}</td>
+          <td class="num mono" data-label="Vencimento">${r.vencimento||'—'}</td>
+        </tr>`).join('');
+      const shownTotal = rows.reduce((a,r)=>a+r.valor,0);
+      tbody.innerHTML += `<tr class="foot-total"><td data-label="" colspan="2">Subtotal (${rows.length})</td><td class="num" data-label="Total">${fmtBRL(shownTotal)}</td><td data-label=""></td></tr>`;
+    }
+  }
+
+  document.getElementById('search-'+wrapId).addEventListener('input', (e)=>{
+    filterText = e.target.value.trim().toLowerCase();
+    draw();
+  });
+  document.querySelectorAll(`#table-${wrapId} thead th`).forEach(th=>{
+    th.addEventListener('click', ()=>{
+      const key = th.dataset.key;
+      if(sortKey===key){ sortDir *= -1; } else { sortKey = key; sortDir = key==='cliente'||key==='pedido' ? 1 : -1; }
+      draw();
+    });
+  });
+
+  draw();
+}
+
+// ============================================================
+// CHRONOLOGICAL LIST PANEL (all situations, sorted by date, with situação pill)
+// ============================================================
+function renderChronoPanel(container, data, opts){
+  const total = data.reduce((a,r)=>a+r.valor,0);
+  const wrapId = opts.id;
+  container.innerHTML = `
+    <div class="section-title"><h2>${opts.title}</h2><span class="count">${data.length} recebimentos</span></div>
+    <div class="controls-row">
+      <input class="search-input" type="text" placeholder="Buscar por cliente ou nº do pedido..." id="search-${wrapId}">
+      <select class="search-input" style="flex:0 0 170px;" id="filter-${wrapId}-sit">
+        <option value="">Todas situações</option>
+        ${SITUACOES.map(s=>`<option value="${s}">${s}</option>`).join('')}
+      </select>
+      <div class="total-chip">Total: ${fmtBRL(total)}</div>
+    </div>
+    <div class="table-scroll">
+      <table class="data-table card-mode" id="table-${wrapId}">
+        <thead>
+          <tr>
+            <th data-key="vencimento">Vencimento <span class="arrow">▾</span></th>
+            <th data-key="pedido">Nº Pedido <span class="arrow">▾</span></th>
+            <th data-key="cliente">Cliente <span class="arrow">▾</span></th>
+            <th data-key="valor" style="text-align:right">Valor (R$) <span class="arrow">▾</span></th>
+            <th data-key="situacao">Situação <span class="arrow">▾</span></th>
+          </tr>
+        </thead>
+        <tbody id="tbody-${wrapId}"></tbody>
+      </table>
+    </div>
+  `;
+
+  let sortKey = 'vencimento', sortDir = 1;
+  let filterText = '', filterSit = '';
+
+  function draw(){
+    let rows = data.filter(r=>{
+      if(filterSit && r.situacao!==filterSit) return false;
+      if(!filterText) return true;
+      const hay = (String(r.pedido||'') + ' ' + (r.cliente||'')).toLowerCase();
+      return hay.includes(filterText);
+    });
+    rows = rows.slice().sort((a,b)=>{
+      let va = a[sortKey], vb = b[sortKey];
+      if(sortKey==='vencimento'){ va = dateKey(va); vb = dateKey(vb); }
+      if(typeof va === 'string'){ va = va.toLowerCase(); vb = (vb||'').toLowerCase(); }
+      if(va < vb) return -1*sortDir;
+      if(va > vb) return 1*sortDir;
+      return 0;
+    });
+    const tbody = document.getElementById('tbody-'+wrapId);
+    if(rows.length===0){
+      tbody.innerHTML = `<tr><td colspan="5" class="empty-note">Nenhum resultado encontrado.</td></tr>`;
+    } else {
+      tbody.innerHTML = rows.map(r=>`
+        <tr>
+          <td class="mono" data-label="Vencimento">${r.vencimento||'—'}</td>
+          <td class="mono" data-label="Pedido">${r.pedido? '#'+r.pedido : '—'}</td>
+          <td class="wrap-cell" data-label="Cliente">${r.cliente||'Não identificado'}</td>
+          <td class="num" data-label="Valor">${fmtBRL(r.valor)}</td>
+          <td data-label="Situação">${pillFor(r.situacao)}</td>
+        </tr>`).join('');
+      const shownTotal = rows.reduce((a,r)=>a+r.valor,0);
+      tbody.innerHTML += `<tr class="foot-total"><td data-label="" colspan="3">Subtotal (${rows.length})</td><td class="num" data-label="Total">${fmtBRL(shownTotal)}</td><td data-label=""></td></tr>`;
+    }
+  }
+
+  document.getElementById('search-'+wrapId).addEventListener('input', (e)=>{
+    filterText = e.target.value.trim().toLowerCase();
+    draw();
+  });
+  document.getElementById('filter-'+wrapId+'-sit').addEventListener('change', (e)=>{
+    filterSit = e.target.value;
+    draw();
+  });
+  document.querySelectorAll(`#table-${wrapId} thead th`).forEach(th=>{
+    th.addEventListener('click', ()=>{
+      const key = th.dataset.key;
+      if(sortKey===key){ sortDir *= -1; } else { sortKey = key; sortDir = (key==='cliente'||key==='situacao') ? 1 : (key==='vencimento' ? 1 : -1); }
+      draw();
+    });
+  });
+
+  draw();
+}
+
+// ============================================================
+// "TODOS" full table panel
+// ============================================================
+function renderTodosPanel(container){
+  const total = RAW.reduce((a,r)=>a+r.valor,0);
+  container.innerHTML = `
+    <div class="section-title"><h2>Todos os Lançamentos</h2><span class="count">${RAW.length} linhas</span></div>
+    <div class="controls-row">
+      <input class="search-input" type="text" placeholder="Buscar por cliente, pedido, observação..." id="search-todos">
+      <select class="search-input" style="flex:0 0 170px;" id="filter-todos-sit">
+        <option value="">Todas situações</option>
+        ${SITUACOES.map(s=>`<option value="${s}">${s}</option>`).join('')}
+      </select>
+      <div class="total-chip" id="chip-todos">Total: ${fmtBRL(total)}</div>
+    </div>
+    <div class="scroll-hint">arraste para o lado »»»</div>
+    <div class="table-scroll">
+      <table class="data-table" id="table-todos">
+        <thead>
+          <tr>
+            <th data-key="pedido">Pedido</th>
+            <th data-key="cliente">Cliente</th>
+            <th data-key="valor" style="text-align:right">Valor</th>
+            <th data-key="erva" style="text-align:right">Ervas</th>
+            <th data-key="bebida" style="text-align:right">Bebidas</th>
+            <th data-key="situacao">Situação</th>
+            <th data-key="descricao">Descrição</th>
+            <th data-key="vencimento" style="text-align:right">Vencimento</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-todos"></tbody>
+      </table>
+    </div>
+  `;
+
+  let sortKey='vencimento', sortDir=1, filterText='', filterSit='';
+
+  function draw(){
+    let rows = RAW.filter(r=>{
+      if(filterSit && r.situacao!==filterSit) return false;
+      if(!filterText) return true;
+      const hay = (String(r.pedido||'')+' '+(r.cliente||'')+' '+(r.obs||'')+' '+(r.descricao||'')).toLowerCase();
+      return hay.includes(filterText);
+    });
+    rows = rows.slice().sort((a,b)=>{
+      let va=a[sortKey], vb=b[sortKey];
+      if(sortKey==='vencimento'){ va=dateKey(va); vb=dateKey(vb); }
+      if(typeof va==='string'){ va=va.toLowerCase(); vb=(vb||'').toLowerCase(); }
+      if(va<vb) return -1*sortDir;
+      if(va>vb) return 1*sortDir;
+      return 0;
+    });
+    const tbody = document.getElementById('tbody-todos');
+    if(rows.length===0){
+      tbody.innerHTML = `<tr><td colspan="8" class="empty-note">Nenhum resultado encontrado.</td></tr>`;
+    } else {
+      tbody.innerHTML = rows.map(r=>`
+        <tr>
+          <td class="mono">${r.pedido? '#'+r.pedido : '—'}</td>
+          <td class="wrap-cell">${r.cliente||'Não identificado'}</td>
+          <td class="num">${fmtBRL(r.valor)}</td>
+          <td class="num">${r.erva? fmtBRL(r.erva) : '—'}</td>
+          <td class="num">${r.bebida? fmtBRL(r.bebida) : '—'}</td>
+          <td>${pillFor(r.situacao)}</td>
+          <td class="wrap-cell">${r.descricao||''}</td>
+          <td class="num mono">${r.vencimento||'—'}</td>
+        </tr>`).join('');
+    }
+    const shownTotal = rows.reduce((a,r)=>a+r.valor,0);
+    document.getElementById('chip-todos').textContent = `${rows.length} linhas · Total: ${fmtBRL(shownTotal)}`;
+  }
+
+  document.getElementById('search-todos').addEventListener('input', e=>{ filterText=e.target.value.trim().toLowerCase(); draw(); });
+  document.getElementById('filter-todos-sit').addEventListener('change', e=>{ filterSit=e.target.value; draw(); });
+  document.querySelectorAll('#table-todos thead th').forEach(th=>{
+    th.addEventListener('click', ()=>{
+      const key = th.dataset.key;
+      if(sortKey===key){ sortDir*=-1; } else { sortKey=key; sortDir = (key==='cliente'||key==='descricao'||key==='situacao'||key==='pedido') ? 1 : -1; }
+      draw();
+    });
+  });
+
+  draw();
+}
+
+// ============================================================
+// BOOTSTRAP
+// ============================================================
+function buildPanels(){
+  const wrap = document.getElementById('wrap');
+  TABS.forEach((t,i)=>{
+    const p = document.createElement('div');
+    p.className = 'panel' + (i===0?' active':'');
+    p.id = 'panel-'+t.id;
+    wrap.appendChild(p);
+  });
+
+  renderResumo(document.getElementById('panel-resumo'));
+  renderListPanel(document.getElementById('panel-atraso'), atraso, {id:'atraso', title:'Pedidos em Atraso'});
+  renderListPanel(document.getElementById('panel-aberto-ervas'), abertoErvas, {id:'aberto-ervas', title:'Pedidos em Aberto — Ervas'});
+  renderListPanel(document.getElementById('panel-aberto-bebidas'), abertoBebidas, {id:'aberto-bebidas', title:'Pedidos em Aberto — Bebidas'});
+  renderListPanel(document.getElementById('panel-pagos-ervas'), pagosErvas, {id:'pagos-ervas', title:'Pedidos Pagos — Ervas'});
+  renderListPanel(document.getElementById('panel-pagos-bebidas'), pagosBebidas, {id:'pagos-bebidas', title:'Pedidos Pagos — Bebidas'});
+  renderChronoPanel(document.getElementById('panel-cron-ervas'), cronErvas, {id:'cron-ervas', title:'Recebimentos Cronológico — Ervas'});
+  renderChronoPanel(document.getElementById('panel-cron-bebidas'), cronBebidas, {id:'cron-bebidas', title:'Recebimentos Cronológico — Bebidas'});
+  renderTodosPanel(document.getElementById('panel-todos'));
+}
+
+renderHeader();
+renderTabs();
+buildPanels();
+
+</script>
+</body>
+</html>
