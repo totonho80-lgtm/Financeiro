@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRM · Marcão Consultoria Patrimonial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #F6F4EF;
+    --surface: #FFFFFF;
+    --border: #E4E0D6;
+    --ink: #1F2A2E;
+    --muted: #6B6459;
+    --accent: #A9824C;
+    --accent-ink: #FFFFFF;
+    --success: #3F7A5C;
+    --danger: #A6453A;
+    --warn: #B08A2E;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh;
+  }
+  header.topo{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:22px 32px;
+    border-bottom:1px solid var(--border);
+    background:var(--surface);
+  }
+  header.topo .marca{
+    font-family:'Source Serif 4',serif;
+    font-size:20px;
+    font-weight:600;
+    letter-spacing:.2px;
+  }
+  header.topo .marca span{color:var(--accent);}
+  .voltar{
+    border:1px solid var(--border);
+    background:transparent;
+    color:var(--muted);
+    padding:8px 14px;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:14px;
+    font-family:inherit;
+  }
+  .voltar:hover{border-color:var(--accent); color:var(--accent);}
+  main{max-width:960px; margin:0 auto; padding:48px 24px;}
+  .tela{display:none;}
+  .tela.ativa{display:block;}
+
+  /* Home */
+  .grade-home{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:24px;
+    margin-top:24px;
+  }
+  .cartao-home{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:36px 28px;
+    cursor:pointer;
+    text-align:left;
+    transition:border-color .15s ease, transform .15s ease;
+  }
+  .cartao-home:hover{border-color:var(--accent); transform:translateY(-2px);}
+  .cartao-home .num{
+    font-family:'Source Serif 4',serif;
+    font-size:15px;
+    color:var(--accent);
+    margin-bottom:14px;
+  }
+  .cartao-home h2{margin:0 0 8px; font-family:'Source Serif 4',serif; font-size:22px;}
+  .cartao-home p{margin:0; color:var(--muted); font-size:14px; line-height:1.5;}
+  @media(max-width:640px){.grade-home{grid-template-columns:1fr;}}
+
+  h1.titulo-tela{font-family:'Source Serif 4',serif; font-size:26px; margin:0 0 28px;}
+
+  /* Formulário de cadastro */
+  form.form-cadastro{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:32px;
+    max-width:480px;
+  }
+  .campo{margin-bottom:20px;}
+  .campo label{
+    display:block; font-size:13px; color:var(--muted); margin-bottom:6px;
+  }
+  .campo input, .campo select, .campo textarea{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid var(--border);
+    border-radius:6px;
+    font-family:inherit;
+    font-size:14px;
+    background:#FCFBF9;
+  }
+  .campo input:focus, .campo select:focus, .campo textarea:focus{
+    outline:none; border-color:var(--accent);
+  }
+  .btn{
+    display:inline-block;
+    background:var(--ink);
+    color:#fff;
+    border:none;
+    padding:11px 22px;
+    border-radius:6px;
+    font-size:14px;
+    font-weight:500;
+    cursor:pointer;
+    font-family:inherit;
+  }
+  .btn:hover{background:var(--accent);}
+  .btn.secundario{
+    background:transparent;
+    color:var(--ink);
+    border:1px solid var(--border);
+  }
+  .btn.secundario:hover{border-color:var(--accent); color:var(--accent); background:transparent;}
+  .msg{font-size:14px; margin-top:14px;}
+  .msg.ok{color:var(--success);}
+  .msg.erro{color:var(--danger);}
+
+  /* Lista de clientes */
+  .barra-lista{display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;}
+  table.tabela-clientes{
+    width:100%;
+    border-collapse:collapse;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px;
+    overflow:hidden;
+  }
+  table.tabela-clientes th{
+    text-align:left;
+    font-size:12px;
+    color:var(--muted);
+    font-weight:500;
+    padding:12px 16px;
+    border-bottom:1px solid var(--border);
+  }
+  table.tabela-clientes td{
+    padding:14px 16px;
+    border-bottom:1px solid var(--border);
+    font-size:14px;
+  }
+  table.tabela-clientes tr:last-child td{border-bottom:none;}
+  table.tabela-clientes tbody tr{cursor:pointer;}
+  table.tabela-clientes tbody tr:hover{background:#FBF9F4;}
+  .selo-nivel{
+    display:inline-block;
+    padding:4px 10px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:500;
+    text-transform:capitalize;
+  }
+
+  /* Modal */
+  .modal-fundo{
+    display:none;
+    position:fixed; inset:0;
+    background:rgba(31,42,46,.45);
+    align-items:center; justify-content:center;
+    padding:20px;
+    z-index:100;
+  }
+  .modal-fundo.aberto{display:flex;}
+  .modal-janela{
+    background:var(--surface);
+    border-radius:12px;
+    max-width:920px;
+    width:100%;
+    max-height:88vh;
+    overflow-y:auto;
+    padding:32px;
+  }
+  .modal-cabecalho{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;}
+  .modal-cabecalho h2{font-family:'Source Serif 4',serif; font-size:22px; margin:0;}
+  .modal-cabecalho .fechar{
+    border:none; background:transparent; font-size:22px; cursor:pointer; color:var(--muted); line-height:1;
+  }
+  .modal-sub{color:var(--muted); font-size:13px; margin-bottom:24px;}
+  .colunas-niveis{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:12px;
+    margin-bottom:28px;
+  }
+  @media(max-width:800px){.colunas-niveis{grid-template-columns:repeat(3,1fr);}}
+  .coluna-nivel{
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:12px;
+    min-height:140px;
+  }
+  .coluna-nivel.atual{border-color:var(--accent); background:#FBF6EC;}
+  .coluna-nivel h4{
+    margin:0 0 8px;
+    font-size:12px;
+    text-transform:capitalize;
+    color:var(--ink);
+  }
+  .coluna-nivel .marcador{
+    display:inline-block; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px; margin-bottom:8px;
+  }
+  .marcador.x{background:var(--accent); color:#fff;}
+  .marcador.y{background:#EFECE4; color:var(--muted);}
+  .coluna-nivel ul{margin:0; padding-left:16px;}
+  .coluna-nivel li{font-size:11.5px; color:var(--muted); margin-bottom:6px; line-height:1.4;}
+
+  .bloco-acao{
+    border-top:1px solid var(--border);
+    padding-top:20px;
+    display:grid;
+    grid-template-columns:180px 1fr auto;
+    gap:12px;
+    align-items:end;
+  }
+  @media(max-width:640px){.bloco-acao{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<header class="topo">
+  <div class="marca">Marcão <span>·</span> CRM Patrimonial</div>
+  <button class="voltar" id="btn-voltar" style="display:none;" onclick="mostrarTela('home')">← Início</button>
+</header>
+
+<main>
+
+  <!-- TELA HOME -->
+  <section class="tela ativa" id="tela-home">
+    <h1 class="titulo-tela">O que você quer fazer?</h1>
+    <div class="grade-home">
+      <div class="cartao-home" onclick="mostrarTela('cadastro')">
+        <div class="num">01</div>
+        <h2>Cadastro de cliente</h2>
+        <p>Registrar um novo lead com nome, telefone, cidade e origem.</p>
+      </div>
+      <div class="cartao-home" onclick="mostrarTela('lista'); carregarClientes();">
+        <div class="num">02</div>
+        <h2>Lista de clientes</h2>
+        <p>Ver todos os clientes, o nível atual da negociação e o histórico de contatos.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TELA CADASTRO -->
+  <section class="tela" id="tela-cadastro">
+    <h1 class="titulo-tela">Cadastro de cliente</h1>
+    <form class="form-cadastro" id="form-cadastro">
+      <div class="campo">
+        <label for="c-nome">Nome</label>
+        <input type="text" id="c-nome" required>
+      </div>
+      <div class="campo">
+        <label for="c-telefone">Telefone</label>
+        <input type="tel" id="c-telefone" required>
+      </div>
+      <div class="campo">
+        <label for="c-cidade">Cidade</label>
+        <input type="text" id="c-cidade" required>
+      </div>
+      <div class="campo">
+        <label for="c-origem">Origem</label>
+        <input type="text" id="c-origem" placeholder="ex: metaads, indicação, portal" required>
+      </div>
+      <button type="submit" class="btn">Salvar cliente</button>
+      <div class="msg" id="msg-cadastro"></div>
+    </form>
+  </section>
+
+  <!-- TELA LISTA -->
+  <section class="tela" id="tela-lista">
+    <div class="barra-lista">
+      <h1 class="titulo-tela" style="margin:0;">Lista de clientes</h1>
+      <button class="btn secundario" onclick="carregarClientes()">Atualizar</button>
+    </div>
+    <table class="tabela-clientes">
+      <thead>
+        <tr><th>Nome</th><th>Telefone</th><th>Cidade</th><th>Origem</th><th>Nível atual</th></tr>
+      </thead>
+      <tbody id="corpo-tabela">
+        <tr><td colspan="5" style="color:var(--muted);">Carregando...</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</main>
+
+<!-- MODAL DE NÍVEIS -->
+<div class="modal-fundo" id="modal-fundo">
+  <div class="modal-janela">
+    <div class="modal-cabecalho">
+      <h2 id="modal-nome-cliente">Cliente</h2>
+      <button class="fechar" onclick="fecharModal()">×</button>
+    </div>
+    <div class="modal-sub" id="modal-info-cliente"></div>
+    <div class="colunas-niveis" id="colunas-niveis"></div>
+
+    <div class="bloco-acao">
+      <div class="campo" style="margin:0;">
+        <label>Nível</label>
+        <select id="sel-nivel"></select>
+      </div>
+      <div class="campo" style="margin:0;">
+        <label>Status / observação</label>
+        <input type="text" id="txt-status" placeholder="ex: cliente pediu retorno na quinta">
+      </div>
+      <button class="btn" onclick="registrarAcao()">Registrar</button>
+    </div>
+    <div class="msg" id="msg-modal"></div>
+  </div>
+</div>
+
+<script>
+  // ⚠️ Depois de implantar o Apps Script (Implantar > Nova implantação > App da Web),
+  // cole aqui a URL gerada (termina em /exec).
+  const API_URL = "https://script.google.com/macros/s/AKfycbyq0009Qwq7TmJy0gDtyzYWeAqWUdSmkXeoHsff63cRbizcKOe22R3vKrQTCGCWCyoG2w/exec";
+
+  const NIVEIS = ['prospecção','agendamento','visita','proposta','fechamento','perdido'];
+  const CORES_NIVEL = {
+    'prospecção': '#6B6459',
+    'agendamento': '#3D5A80',
+    'visita': '#B08A2E',
+    'proposta': '#8A5CA8',
+    'fechamento': '#3F7A5C',
+    'perdido': '#A6453A'
+  };
+
+  let clientes = [];
+  let clienteAtivo = null;
+
+  function mostrarTela(id){
+    document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
+    document.getElementById('tela-' + id).classList.add('ativa');
+    document.getElementById('btn-voltar').style.display = id === 'home' ? 'none' : 'inline-block';
+  }
+
+  // ---------- Cadastro ----------
+  document.getElementById('form-cadastro').addEventListener('submit', async function(ev){
+    ev.preventDefault();
+    const msg = document.getElementById('msg-cadastro');
+    msg.textContent = 'Salvando...';
+    msg.className = 'msg';
+    const payload = {
+      action: 'add_client',
+      nome: document.getElementById('c-nome').value.trim(),
+      telefone: document.getElementById('c-telefone').value.trim(),
+      cidade: document.getElementById('c-cidade').value.trim(),
+      origem: document.getElementById('c-origem').value.trim()
+    };
+    try{
+      const resp = await chamarAPI(payload);
+      if(resp.ok){
+        msg.textContent = 'Cliente cadastrado com sucesso.';
+        msg.className = 'msg ok';
+        document.getElementById('form-cadastro').reset();
+      } else {
+        throw new Error(resp.erro || 'erro desconhecido');
+      }
+    } catch(err){
+      msg.textContent = 'Erro ao salvar: ' + err.message;
+      msg.className = 'msg erro';
+    }
+  });
+
+  // ---------- Lista ----------
+  async function carregarClientes(){
+    const corpo = document.getElementById('corpo-tabela');
+    corpo.innerHTML = '<tr><td colspan="5" style="color:var(--muted);">Carregando...</td></tr>';
+    try{
+      const resp = await fetch(API_URL + '?action=list');
+      clientes = await resp.json();
+      renderTabela();
+    } catch(err){
+      corpo.innerHTML = '<tr><td colspan="5" style="color:var(--danger);">Não foi possível carregar (verifique a API_URL).</td></tr>';
+    }
+  }
+
+  function nivelAtualDe(cliente){
+    for(const nivel of NIVEIS){
+      if(cliente.niveis[nivel] && cliente.niveis[nivel].marcador === 'x') return nivel;
+    }
+    return NIVEIS[0];
+  }
+
+  function renderTabela(){
+    const corpo = document.getElementById('corpo-tabela');
+    if(!clientes.length){
+      corpo.innerHTML = '<tr><td colspan="5" style="color:var(--muted);">Nenhum cliente cadastrado ainda.</td></tr>';
+      return;
+    }
+    corpo.innerHTML = clientes.map((c, idx) => {
+      const nivel = nivelAtualDe(c);
+      const cor = CORES_NIVEL[nivel] || '#999';
+      return `<tr onclick="abrirModal(${idx})">
+        <td>${escapeHtml(c.nome)}</td>
+        <td>${escapeHtml(c.telefone)}</td>
+        <td>${escapeHtml(c.cidade)}</td>
+        <td>${escapeHtml(c.origem)}</td>
+        <td><span class="selo-nivel" style="background:${cor}22; color:${cor};">${nivel}</span></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function escapeHtml(s){
+    return String(s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  // ---------- Modal ----------
+  function abrirModal(idx){
+    clienteAtivo = clientes[idx];
+    document.getElementById('modal-nome-cliente').textContent = clienteAtivo.nome;
+    document.getElementById('modal-info-cliente').textContent =
+      `${clienteAtivo.telefone} · ${clienteAtivo.cidade} · origem: ${clienteAtivo.origem}`;
+
+    const atual = nivelAtualDe(clienteAtivo);
+    document.getElementById('colunas-niveis').innerHTML = NIVEIS.map(nivel => {
+      const dados = clienteAtivo.niveis[nivel] || {marcador:'y', entradas:[]};
+      const ativa = nivel === atual ? 'atual' : '';
+      const itens = dados.entradas.map(e => `<li>${escapeHtml(e)}</li>`).join('') || '<li style="color:#C9C4B8;">sem registros</li>';
+      return `<div class="coluna-nivel ${ativa}">
+        <h4>${nivel}</h4>
+        <span class="marcador ${dados.marcador}">${dados.marcador.toUpperCase()}</span>
+        <ul>${itens}</ul>
+      </div>`;
+    }).join('');
+
+    const sel = document.getElementById('sel-nivel');
+    sel.innerHTML = NIVEIS.map(n => `<option value="${n}" ${n===atual?'selected':''}>${n}</option>`).join('');
+    document.getElementById('txt-status').value = '';
+    document.getElementById('msg-modal').textContent = '';
+    document.getElementById('modal-fundo').classList.add('aberto');
+  }
+
+  function fecharModal(){
+    document.getElementById('modal-fundo').classList.remove('aberto');
+  }
+
+  async function registrarAcao(){
+    const msg = document.getElementById('msg-modal');
+    const nivelSelecionado = document.getElementById('sel-nivel').value;
+    const texto = document.getElementById('txt-status').value.trim();
+    if(!texto){
+      msg.textContent = 'Escreva um status/observação antes de registrar.';
+      msg.className = 'msg erro';
+      return;
+    }
+    const nivelAtual = nivelAtualDe(clienteAtivo);
+    msg.textContent = 'Salvando...';
+    msg.className = 'msg';
+
+    try{
+      let resp;
+      if(nivelSelecionado === nivelAtual){
+        resp = await chamarAPI({ action:'add_status', linha: clienteAtivo.linha, nivel: nivelAtual, texto });
+      } else {
+        resp = await chamarAPI({ action:'advance_level', linha: clienteAtivo.linha, nivelAtual, novoNivel: nivelSelecionado, texto });
+      }
+      if(!resp.ok) throw new Error(resp.erro || 'erro desconhecido');
+      msg.textContent = 'Registrado com sucesso.';
+      msg.className = 'msg ok';
+      await carregarClientes();
+      const idxAtualizado = clientes.findIndex(c => c.linha === clienteAtivo.linha);
+      if(idxAtualizado > -1) abrirModal(idxAtualizado);
+    } catch(err){
+      msg.textContent = 'Erro: ' + err.message;
+      msg.className = 'msg erro';
+    }
+  }
+
+  // ---------- Chamada à API (tudo via GET, inclusive escritas — evita o CORS quebrado do POST no Apps Script) ----------
+  async function chamarAPI(params){
+    const qs = new URLSearchParams(params).toString();
+    const resp = await fetch(`${API_URL}?${qs}`);
+    return resp.json();
+  }
+</script>
+
+</body>
+</html>
