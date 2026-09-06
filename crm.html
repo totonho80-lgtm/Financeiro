@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRM · Marcão Consultoria Patrimonial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #F6F4EF;
+    --surface: #FFFFFF;
+    --border: #E4E0D6;
+    --ink: #1F2A2E;
+    --muted: #6B6459;
+    --accent: #A9824C;
+    --accent-ink: #FFFFFF;
+    --success: #3F7A5C;
+    --danger: #A6453A;
+    --warn: #B08A2E;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh;
+  }
+  header.topo{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:22px 32px;
+    background:var(--ink);
+  }
+  header.topo .marca{
+    font-family:'Inter',sans-serif;
+    font-size:19px;
+    font-weight:800;
+    letter-spacing:.2px;
+    color:#fff;
+  }
+  header.topo .marca span{color:var(--accent);}
+  .voltar{
+    border:1px solid rgba(255,255,255,.25);
+    background:transparent;
+    color:#fff;
+    padding:8px 14px;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:600;
+    font-family:inherit;
+  }
+  .voltar:hover{border-color:var(--accent); color:var(--accent);}
+  main{max-width:960px; margin:0 auto; padding:48px 24px;}
+  .tela{display:none;}
+  .tela.ativa{display:block;}
+
+  /* Home */
+  .grade-home{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:24px;
+    margin-top:24px;
+  }
+  .cartao-home{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:36px 28px;
+    cursor:pointer;
+    text-align:left;
+    transition:border-color .15s ease, transform .15s ease;
+  }
+  .cartao-home:hover{border-color:var(--accent); transform:translateY(-2px);}
+  .cartao-home h2{margin:0 0 8px; font-family:'Inter',sans-serif; font-weight:800; font-size:21px; color:var(--ink);}
+  .cartao-home p{margin:0; color:var(--muted); font-size:14px; line-height:1.5;}
+  @media(max-width:640px){.grade-home{grid-template-columns:1fr;}}
+
+  h1.titulo-tela{font-family:'Inter',sans-serif; font-weight:800; font-size:26px; margin:0 0 28px; color:var(--ink);}
+
+  /* Formulário de cadastro */
+  form.form-cadastro{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:32px;
+    max-width:480px;
+  }
+  .campo{margin-bottom:20px;}
+  .campo label{
+    display:block; font-size:13px; color:var(--muted); margin-bottom:6px;
+  }
+  .campo input, .campo select, .campo textarea{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid var(--border);
+    border-radius:6px;
+    font-family:inherit;
+    font-size:14px;
+    background:#FCFBF9;
+  }
+  .campo input:focus, .campo select:focus, .campo textarea:focus{
+    outline:none; border-color:var(--accent);
+  }
+  .btn{
+    display:inline-block;
+    background:var(--ink);
+    color:#fff;
+    border:none;
+    padding:11px 22px;
+    border-radius:6px;
+    font-size:14px;
+    font-weight:500;
+    cursor:pointer;
+    font-family:inherit;
+  }
+  .btn:hover{background:var(--accent);}
+  .btn.secundario{
+    background:transparent;
+    color:var(--ink);
+    border:1px solid var(--border);
+  }
+  .btn.secundario:hover{border-color:var(--accent); color:var(--accent); background:transparent;}
+  .msg{font-size:14px; margin-top:14px;}
+  .msg.ok{color:var(--success);}
+  .msg.erro{color:var(--danger);}
+
+  /* Lista de clientes */
+  .barra-lista{display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:14px;}
+  .acoes-lista{display:flex; gap:10px; align-items:center;}
+  .input-busca{
+    padding:9px 12px;
+    border:1px solid var(--border);
+    border-radius:6px;
+    font-family:inherit;
+    font-size:14px;
+    background:#FCFBF9;
+    min-width:200px;
+  }
+  .input-busca:focus{outline:none; border-color:var(--accent);}
+  table.tabela-clientes{
+    width:100%;
+    border-collapse:collapse;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px;
+    overflow:hidden;
+  }
+  table.tabela-clientes th{
+    text-align:left;
+    font-size:12px;
+    color:var(--muted);
+    font-weight:500;
+    padding:12px 16px;
+    border-bottom:1px solid var(--border);
+  }
+  table.tabela-clientes td{
+    padding:14px 16px;
+    border-bottom:1px solid var(--border);
+    font-size:14px;
+  }
+  table.tabela-clientes tr:last-child td{border-bottom:none;}
+  table.tabela-clientes tbody tr{cursor:pointer;}
+  table.tabela-clientes tbody tr:hover{background:#FBF9F4;}
+  .selo-nivel{
+    display:inline-block;
+    padding:4px 10px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:500;
+    text-transform:capitalize;
+  }
+
+  /* Em telas estreitas (celular), a tabela vira uma lista de cartões — nada de rolagem lateral */
+  @media(max-width:680px){
+    header.topo{padding:16px 18px; flex-wrap:wrap; gap:10px;}
+    header.topo .marca{font-size:16px;}
+    main{padding:24px 14px;}
+    h1.titulo-tela{font-size:20px;}
+    table.tabela-clientes thead{display:none;}
+    table.tabela-clientes, table.tabela-clientes tbody, table.tabela-clientes tr, table.tabela-clientes td{
+      display:block; width:100%;
+    }
+    table.tabela-clientes tr{
+      border-bottom:1px solid var(--border);
+      padding:12px 4px;
+    }
+    table.tabela-clientes td{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding:5px 12px;
+      border-bottom:none;
+      font-size:13.5px;
+    }
+    table.tabela-clientes td::before{
+      content:attr(data-rotulo);
+      color:var(--muted);
+      font-size:11.5px;
+      flex-shrink:0;
+    }
+    table.tabela-clientes td:first-child{font-weight:600;}
+  }
+
+  /* Modal */
+  .modal-fundo{
+    display:none;
+    position:fixed; inset:0;
+    background:rgba(31,42,46,.45);
+    align-items:center; justify-content:center;
+    padding:20px;
+    z-index:100;
+  }
+  .modal-fundo.aberto{display:flex;}
+  .modal-janela{
+    background:var(--surface);
+    border-radius:12px;
+    max-width:920px;
+    width:100%;
+    max-height:88vh;
+    overflow-y:auto;
+    padding:32px;
+  }
+  .modal-cabecalho{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;}
+  .modal-cabecalho h2{font-family:'Inter',sans-serif; font-weight:800; font-size:21px; margin:0; color:var(--ink);}
+  .modal-cabecalho .fechar{
+    border:none; background:transparent; font-size:22px; cursor:pointer; color:var(--muted); line-height:1;
+  }
+  .modal-sub{color:var(--muted); font-size:13px; margin-bottom:24px;}
+  .colunas-niveis{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:12px;
+    margin-bottom:28px;
+  }
+  @media(max-width:800px){.colunas-niveis{grid-template-columns:repeat(3,1fr);}}
+  @media(max-width:480px){.colunas-niveis{grid-template-columns:repeat(2,1fr); gap:8px;} .modal-janela{padding:20px 16px;}}
+  .coluna-nivel{
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:12px;
+    min-height:110px;
+    cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .coluna-nivel:hover{border-color:var(--accent);}
+  .coluna-nivel.atual{border-color:var(--accent); background:#FBF6EC;}
+  .coluna-nivel h4{
+    margin:0 0 10px;
+    font-size:12px;
+    text-transform:capitalize;
+    color:var(--ink);
+  }
+  .coluna-nivel .ultimo-status{
+    font-size:12px;
+    color:var(--muted);
+    line-height:1.5;
+  }
+  .coluna-nivel .ultimo-status.vazio{color:#C9C4B8;}
+  .coluna-nivel .ver-mais{
+    display:block;
+    margin-top:10px;
+    font-size:11px;
+    color:var(--accent);
+  }
+
+  .bloco-acao{
+    border-top:1px solid var(--border);
+    padding-top:20px;
+    display:grid;
+    grid-template-columns:180px 1fr auto;
+    gap:12px;
+    align-items:end;
+  }
+  @media(max-width:640px){.bloco-acao{grid-template-columns:1fr;}}
+
+  /* Modal secundário: histórico completo de um nível */
+  .modal-fundo.historico{z-index:200;}
+  .modal-historico .modal-janela{max-width:440px;}
+  .lista-historico{list-style:none; margin:0; padding:0;}
+  .lista-historico li{
+    border-bottom:1px solid var(--border);
+    padding:12px 0;
+    font-size:13.5px;
+    color:var(--ink);
+    line-height:1.5;
+  }
+  .lista-historico li:last-child{border-bottom:none;}
+</style>
+</head>
+<body>
+
+<header class="topo">
+  <div class="marca">Marcão <span>·</span> CRM Patrimonial</div>
+  <button class="voltar" id="btn-voltar" style="display:none;" onclick="mostrarTela('home')">← Início</button>
+</header>
+
+<main>
+
+  <!-- TELA HOME -->
+  <section class="tela ativa" id="tela-home">
+    <h1 class="titulo-tela">O que você quer fazer?</h1>
+    <div class="grade-home">
+      <div class="cartao-home" onclick="mostrarTela('cadastro')">
+        <h2>Cadastro de cliente</h2>
+        <p>Registrar um novo lead com nome, telefone, cidade e origem.</p>
+      </div>
+      <div class="cartao-home" onclick="mostrarTela('cadastro-imovel')">
+        <h2>Cadastro de imóvel</h2>
+        <p>Registrar um imóvel e vincular automaticamente ao cliente pelo telefone.</p>
+      </div>
+      <div class="cartao-home" onclick="mostrarTela('lista'); carregarClientes();">
+        <h2>Lista de clientes</h2>
+        <p>Ver todos os clientes, o nível atual da negociação e o histórico de contatos.</p>
+      </div>
+      <div class="cartao-home" onclick="mostrarTela('lista-imoveis'); carregarImoveis();">
+        <h2>Lista de imóveis</h2>
+        <p>Ver todos os imóveis cadastrados, código, tipo, área e valor.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TELA CADASTRO -->
+  <section class="tela" id="tela-cadastro">
+    <h1 class="titulo-tela">Cadastro de cliente</h1>
+    <form class="form-cadastro" id="form-cadastro">
+      <div class="campo">
+        <label for="c-nome">Nome</label>
+        <input type="text" id="c-nome" required>
+      </div>
+      <div class="campo">
+        <label for="c-telefone">Telefone</label>
+        <input type="tel" id="c-telefone" placeholder="(65) 99999-9999" maxlength="15" required>
+      </div>
+      <div class="campo">
+        <label for="c-cidade">Cidade</label>
+        <input type="text" id="c-cidade" required>
+      </div>
+      <div class="campo">
+        <label for="c-origem">Origem</label>
+        <input type="text" id="c-origem" placeholder="ex: metaads, indicação, portal" required>
+      </div>
+      <button type="submit" class="btn">Salvar cliente</button>
+      <div class="msg" id="msg-cadastro"></div>
+    </form>
+  </section>
+
+  <!-- TELA LISTA -->
+  <section class="tela" id="tela-lista">
+    <div class="barra-lista">
+      <h1 class="titulo-tela" style="margin:0;">Lista de clientes</h1>
+      <div class="acoes-lista">
+        <input type="text" id="busca-cliente" class="input-busca" placeholder="Buscar por nome..." oninput="renderTabela()">
+        <button class="btn secundario" onclick="carregarClientes()">Atualizar</button>
+      </div>
+    </div>
+    <table class="tabela-clientes">
+      <thead>
+        <tr><th>Nome</th><th>Telefone</th><th>Cidade</th><th>Origem</th><th>Nível atual</th></tr>
+      </thead>
+      <tbody id="corpo-tabela">
+        <tr><td colspan="5" style="color:var(--muted);">Carregando...</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- TELA CADASTRO DE IMÓVEL -->
+  <section class="tela" id="tela-cadastro-imovel">
+    <h1 class="titulo-tela">Cadastro de imóvel</h1>
+    <form class="form-cadastro" id="form-cadastro-imovel">
+      <div class="campo">
+        <label for="i-nome">Nome do proprietário</label>
+        <input type="text" id="i-nome" required>
+      </div>
+      <div class="campo">
+        <label for="i-telefone">Telefone</label>
+        <input type="tel" id="i-telefone" class="mascara-telefone" placeholder="(65) 99999-9999" maxlength="15" required>
+      </div>
+      <div class="campo">
+        <label for="i-tipo">Tipo de imóvel</label>
+        <select id="i-tipo" required>
+          <option value="">Selecione</option>
+          <option>Casa</option>
+          <option>Apartamento</option>
+          <option>Terreno</option>
+          <option>Chácara/Sítio</option>
+          <option>Comercial</option>
+          <option>Rural</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label for="i-endereco">Endereço</label>
+        <input type="text" id="i-endereco" required>
+      </div>
+      <div class="campo">
+        <label for="i-bairro">Bairro</label>
+        <input type="text" id="i-bairro" required>
+      </div>
+      <div class="campo">
+        <label for="i-cidade">Cidade</label>
+        <input type="text" id="i-cidade" required>
+      </div>
+      <div class="campo">
+        <label for="i-area">Área (m²)</label>
+        <input type="text" id="i-area" inputmode="decimal" placeholder="ex: 320">
+      </div>
+      <div class="campo">
+        <label for="i-valor">Valor</label>
+        <input type="text" id="i-valor" class="mascara-moeda" placeholder="R$ 0,00">
+      </div>
+      <button type="submit" class="btn">Salvar imóvel</button>
+      <div class="msg" id="msg-cadastro-imovel"></div>
+    </form>
+  </section>
+
+  <!-- TELA LISTA DE IMÓVEIS -->
+  <section class="tela" id="tela-lista-imoveis">
+    <div class="barra-lista">
+      <h1 class="titulo-tela" style="margin:0;">Lista de imóveis</h1>
+      <div class="acoes-lista">
+        <input type="text" id="busca-imovel" class="input-busca" placeholder="Buscar por nome ou código..." oninput="renderTabelaImoveis()">
+        <button class="btn secundario" onclick="carregarImoveis()">Atualizar</button>
+      </div>
+    </div>
+    <table class="tabela-clientes" id="tabela-imoveis">
+      <thead>
+        <tr><th>Código</th><th>Nome</th><th>Tipo</th><th>Cidade</th><th>Área</th><th>Valor</th></tr>
+      </thead>
+      <tbody id="corpo-tabela-imoveis">
+        <tr><td colspan="6" style="color:var(--muted);">Carregando...</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</main>
+
+<!-- MODAL DE NÍVEIS -->
+<div class="modal-fundo" id="modal-fundo">
+  <div class="modal-janela">
+    <div class="modal-cabecalho">
+      <h2 id="modal-nome-cliente">Cliente</h2>
+      <button class="fechar" onclick="fecharModal()">×</button>
+    </div>
+    <div class="modal-sub" id="modal-info-cliente"></div>
+    <div class="colunas-niveis" id="colunas-niveis"></div>
+
+    <div class="bloco-acao">
+      <div class="campo" style="margin:0;">
+        <label>Nível</label>
+        <select id="sel-nivel"></select>
+      </div>
+      <div class="campo" style="margin:0;">
+        <label>Status / observação</label>
+        <input type="text" id="txt-status" placeholder="ex: cliente pediu retorno na quinta">
+      </div>
+      <button class="btn" onclick="registrarAcao()">Registrar</button>
+    </div>
+    <div class="msg" id="msg-modal"></div>
+  </div>
+</div>
+
+<!-- MODAL DE HISTÓRICO (todos os status de um nível) -->
+<div class="modal-fundo historico" id="modal-historico">
+  <div class="modal-janela modal-historico">
+    <div class="modal-cabecalho">
+      <h2 id="historico-titulo">Histórico</h2>
+      <button class="fechar" onclick="fecharHistorico()">×</button>
+    </div>
+    <ul class="lista-historico" id="historico-lista"></ul>
+  </div>
+</div>
+
+<script>
+  // ⚠️ Depois de implantar o Apps Script (Implantar > Nova implantação > App da Web),
+  // cole aqui a URL gerada (termina em /exec).
+  const API_URL = "https://script.google.com/macros/s/AKfycbyq0009Qwq7TmJy0gDtyzYWeAqWUdSmkXeoHsff63cRbizcKOe22R3vKrQTCGCWCyoG2w/exec";
+
+  const NIVEIS = ['prospecção','agendamento','visita','proposta','fechamento','perdido'];
+  const CORES_NIVEL = {
+    'prospecção': '#6B6459',
+    'agendamento': '#3D5A80',
+    'visita': '#B08A2E',
+    'proposta': '#8A5CA8',
+    'fechamento': '#3F7A5C',
+    'perdido': '#A6453A'
+  };
+
+  let clientes = [];
+  let clienteAtivo = null;
+
+  // Máscara de telefone: (DD) DDDD-DDDD para fixo, (DD) DDDDD-DDDD para celular
+  function formatarTelefone(valor){
+    const digitos = valor.replace(/\D/g,'').slice(0,11);
+    if(!digitos) return '';
+    if(digitos.length <= 2) return '(' + digitos;
+    if(digitos.length <= 6) return '(' + digitos.slice(0,2) + ') ' + digitos.slice(2);
+    if(digitos.length <= 10) return '(' + digitos.slice(0,2) + ') ' + digitos.slice(2,6) + '-' + digitos.slice(6);
+    return '(' + digitos.slice(0,2) + ') ' + digitos.slice(2,7) + '-' + digitos.slice(7);
+  }
+  document.getElementById('c-telefone').addEventListener('input', function(){
+    this.value = formatarTelefone(this.value);
+    this.setSelectionRange(this.value.length, this.value.length);
+  });
+  document.querySelectorAll('.mascara-telefone').forEach(campo => {
+    campo.addEventListener('input', function(){
+      this.value = formatarTelefone(this.value);
+      this.setSelectionRange(this.value.length, this.value.length);
+    });
+  });
+
+  // Máscara de moeda: "R$ 1.250,00"
+  function formatarMoeda(valor){
+    const digitos = valor.replace(/\D/g,'');
+    if(!digitos) return '';
+    const numero = (Number(digitos) / 100).toFixed(2);
+    const [inteiro, centavos] = numero.split('.');
+    const inteiroFormatado = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return 'R$ ' + inteiroFormatado + ',' + centavos;
+  }
+  document.querySelectorAll('.mascara-moeda').forEach(campo => {
+    campo.addEventListener('input', function(){
+      this.value = formatarMoeda(this.value);
+      this.setSelectionRange(this.value.length, this.value.length);
+    });
+  });
+
+  function mostrarTela(id){
+    document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
+    document.getElementById('tela-' + id).classList.add('ativa');
+    document.getElementById('btn-voltar').style.display = id === 'home' ? 'none' : 'inline-block';
+  }
+
+  // ---------- Cadastro ----------
+  document.getElementById('form-cadastro').addEventListener('submit', async function(ev){
+    ev.preventDefault();
+    const msg = document.getElementById('msg-cadastro');
+    msg.textContent = 'Salvando...';
+    msg.className = 'msg';
+    const payload = {
+      action: 'add_client',
+      nome: document.getElementById('c-nome').value.trim(),
+      telefone: document.getElementById('c-telefone').value.trim(),
+      cidade: document.getElementById('c-cidade').value.trim(),
+      origem: document.getElementById('c-origem').value.trim()
+    };
+    try{
+      const resp = await chamarAPI(payload);
+      if(resp.ok){
+        msg.textContent = 'Cliente cadastrado com sucesso.';
+        msg.className = 'msg ok';
+        document.getElementById('form-cadastro').reset();
+      } else {
+        throw new Error(resp.erro || 'erro desconhecido');
+      }
+    } catch(err){
+      msg.textContent = 'Erro ao salvar: ' + err.message;
+      msg.className = 'msg erro';
+    }
+  });
+
+  // ---------- Lista ----------
+  async function carregarClientes(){
+    const corpo = document.getElementById('corpo-tabela');
+    corpo.innerHTML = '<tr><td colspan="5" style="color:var(--muted);">Carregando...</td></tr>';
+    try{
+      const resp = await fetch(API_URL + '?action=list');
+      clientes = await resp.json();
+      ordenarPorUltimaMovimentacao();
+      renderTabela();
+    } catch(err){
+      corpo.innerHTML = '<tr><td colspan="5" style="color:var(--danger);">Não foi possível carregar (verifique a API_URL).</td></tr>';
+    }
+  }
+
+  function nivelAtualDe(cliente){
+    for(const nivel of NIVEIS){
+      if(cliente.niveis[nivel] && cliente.niveis[nivel].marcador === 'x') return nivel;
+    }
+    return NIVEIS[0];
+  }
+
+  // Extrai a data (dd/mm/aaaa) no fim de um texto de status, ex: "Cliente pediu retorno - 05/09/2026"
+  function extrairData(texto){
+    const m = String(texto || '').match(/(\d{2})\/(\d{2})\/(\d{4})\s*$/);
+    if(!m) return null;
+    return new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]));
+  }
+
+  // Data do contato mais recente do cliente, olhando todos os níveis
+  function ultimaAtualizacao(cliente){
+    let maisRecente = null;
+    NIVEIS.forEach(nivel => {
+      const entradas = (cliente.niveis[nivel] && cliente.niveis[nivel].entradas) || [];
+      entradas.forEach(e => {
+        const d = extrairData(e);
+        if(d && (!maisRecente || d > maisRecente)) maisRecente = d;
+      });
+    });
+    return maisRecente;
+  }
+
+  // Fila ordenada: contato mais recente primeiro, sem data (ou parado há mais tempo) no final
+  function ordenarPorUltimaMovimentacao(){
+    clientes.sort((a, b) => {
+      const da = ultimaAtualizacao(a);
+      const db = ultimaAtualizacao(b);
+      if(!da && !db) return 0;
+      if(!da) return 1;
+      if(!db) return -1;
+      return db - da;
+    });
+  }
+
+  function renderTabela(){
+    const corpo = document.getElementById('corpo-tabela');
+    if(!clientes.length){
+      corpo.innerHTML = '<tr><td colspan="5" style="color:var(--muted);">Nenhum cliente cadastrado ainda.</td></tr>';
+      return;
+    }
+    const termo = document.getElementById('busca-cliente').value.trim().toLowerCase();
+    const filtrados = termo
+      ? clientes.filter(c => c.nome.toLowerCase().includes(termo))
+      : clientes;
+
+    if(!filtrados.length){
+      corpo.innerHTML = '<tr><td colspan="5" style="color:var(--muted);">Nenhum cliente encontrado para essa busca.</td></tr>';
+      return;
+    }
+
+    corpo.innerHTML = filtrados.map((c) => {
+      const idx = clientes.indexOf(c);
+      const nivel = nivelAtualDe(c);
+      const cor = CORES_NIVEL[nivel] || '#999';
+      const seloImovel = (c.imoveis && c.imoveis.length)
+        ? `<span class="selo-nivel" style="background:#3F7A5C22; color:#3F7A5C; margin-left:6px;">imóvel ${c.imoveis.join(', ')}</span>`
+        : '';
+      return `<tr onclick="abrirModal(${idx})">
+        <td data-rotulo="Nome">${escapeHtml(c.nome)}</td>
+        <td data-rotulo="Telefone">${escapeHtml(c.telefone)}</td>
+        <td data-rotulo="Cidade">${escapeHtml(c.cidade)}</td>
+        <td data-rotulo="Origem">${escapeHtml(c.origem)}</td>
+        <td data-rotulo="Nível"><span class="selo-nivel" style="background:${cor}22; color:${cor};">${nivel}</span>${seloImovel}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  function escapeHtml(s){
+    return String(s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  // ---------- Cadastro de imóvel ----------
+  document.getElementById('form-cadastro-imovel').addEventListener('submit', async function(ev){
+    ev.preventDefault();
+    const msg = document.getElementById('msg-cadastro-imovel');
+    msg.textContent = 'Salvando...';
+    msg.className = 'msg';
+    const payload = {
+      action: 'add_imovel',
+      nome: document.getElementById('i-nome').value.trim(),
+      telefone: document.getElementById('i-telefone').value.trim(),
+      tipo: document.getElementById('i-tipo').value,
+      endereco: document.getElementById('i-endereco').value.trim(),
+      bairro: document.getElementById('i-bairro').value.trim(),
+      cidade: document.getElementById('i-cidade').value.trim(),
+      area: document.getElementById('i-area').value.trim(),
+      valor: document.getElementById('i-valor').value.trim()
+    };
+    try{
+      const resp = await chamarAPI(payload);
+      if(resp.ok){
+        msg.textContent = `Imóvel cadastrado com sucesso — código ${resp.codigo}.`;
+        msg.className = 'msg ok';
+        document.getElementById('form-cadastro-imovel').reset();
+      } else {
+        throw new Error(resp.erro || 'erro desconhecido');
+      }
+    } catch(err){
+      msg.textContent = 'Erro ao salvar: ' + err.message;
+      msg.className = 'msg erro';
+    }
+  });
+
+  // ---------- Lista de imóveis ----------
+  let imoveis = [];
+  async function carregarImoveis(){
+    const corpo = document.getElementById('corpo-tabela-imoveis');
+    corpo.innerHTML = '<tr><td colspan="6" style="color:var(--muted);">Carregando...</td></tr>';
+    try{
+      const resp = await fetch(API_URL + '?action=list_imoveis');
+      imoveis = await resp.json();
+      renderTabelaImoveis();
+    } catch(err){
+      corpo.innerHTML = '<tr><td colspan="6" style="color:var(--danger);">Não foi possível carregar.</td></tr>';
+    }
+  }
+
+  function renderTabelaImoveis(){
+    const corpo = document.getElementById('corpo-tabela-imoveis');
+    if(!imoveis.length){
+      corpo.innerHTML = '<tr><td colspan="6" style="color:var(--muted);">Nenhum imóvel cadastrado ainda.</td></tr>';
+      return;
+    }
+    const termo = document.getElementById('busca-imovel').value.trim().toLowerCase();
+    const filtrados = termo
+      ? imoveis.filter(i => i.nome.toLowerCase().includes(termo) || String(i.codigo).includes(termo))
+      : imoveis;
+
+    if(!filtrados.length){
+      corpo.innerHTML = '<tr><td colspan="6" style="color:var(--muted);">Nenhum imóvel encontrado para essa busca.</td></tr>';
+      return;
+    }
+
+    corpo.innerHTML = filtrados.map(i => `<tr>
+      <td data-rotulo="Código">${escapeHtml(i.codigo)}</td>
+      <td data-rotulo="Nome">${escapeHtml(i.nome)}</td>
+      <td data-rotulo="Tipo">${escapeHtml(i.tipo)}</td>
+      <td data-rotulo="Cidade">${escapeHtml(i.cidade)}</td>
+      <td data-rotulo="Área">${escapeHtml(i.area)}</td>
+      <td data-rotulo="Valor">${escapeHtml(i.valor)}</td>
+    </tr>`).join('');
+  }
+
+  // ---------- Modal ----------
+  function abrirModal(idx){
+    clienteAtivo = clientes[idx];
+    document.getElementById('modal-nome-cliente').textContent = clienteAtivo.nome;
+    document.getElementById('modal-info-cliente').textContent =
+      `${clienteAtivo.telefone} · ${clienteAtivo.cidade} · origem: ${clienteAtivo.origem}` +
+      (clienteAtivo.imoveis && clienteAtivo.imoveis.length ? ` · imóveis: ${clienteAtivo.imoveis.join(', ')}` : '');
+
+    const atual = nivelAtualDe(clienteAtivo);
+    document.getElementById('colunas-niveis').innerHTML = NIVEIS.map(nivel => {
+      const dados = clienteAtivo.niveis[nivel] || {marcador:'y', entradas:[]};
+      const ativa = nivel === atual ? 'atual' : '';
+      const ultimo = dados.entradas.length ? dados.entradas[dados.entradas.length - 1] : null;
+      return `<div class="coluna-nivel ${ativa}" onclick="abrirHistorico('${nivel}')">
+        <h4>${nivel}</h4>
+        <div class="ultimo-status ${ultimo ? '' : 'vazio'}">${ultimo ? escapeHtml(ultimo) : 'sem registros'}</div>
+        ${dados.entradas.length > 1 ? `<span class="ver-mais">ver histórico (${dados.entradas.length})</span>` : ''}
+      </div>`;
+    }).join('');
+
+    const sel = document.getElementById('sel-nivel');
+    sel.innerHTML = NIVEIS.map(n => `<option value="${n}" ${n===atual?'selected':''}>${n}</option>`).join('');
+    document.getElementById('txt-status').value = '';
+    document.getElementById('msg-modal').textContent = '';
+    document.getElementById('modal-fundo').classList.add('aberto');
+  }
+
+  function fecharModal(){
+    document.getElementById('modal-fundo').classList.remove('aberto');
+  }
+
+  function abrirHistorico(nivel){
+    const dados = clienteAtivo.niveis[nivel] || {entradas:[]};
+    document.getElementById('historico-titulo').textContent = `${clienteAtivo.nome} · ${nivel}`;
+    const lista = document.getElementById('historico-lista');
+    lista.innerHTML = dados.entradas.length
+      ? dados.entradas.map(e => `<li>${escapeHtml(e)}</li>`).join('')
+      : '<li style="color:#C9C4B8;">sem registros</li>';
+    document.getElementById('modal-historico').classList.add('aberto');
+  }
+
+  function fecharHistorico(){
+    document.getElementById('modal-historico').classList.remove('aberto');
+  }
+
+  async function registrarAcao(){
+    const msg = document.getElementById('msg-modal');
+    const nivelSelecionado = document.getElementById('sel-nivel').value;
+    const texto = document.getElementById('txt-status').value.trim();
+    if(!texto){
+      msg.textContent = 'Escreva um status/observação antes de registrar.';
+      msg.className = 'msg erro';
+      return;
+    }
+    const nivelAtual = nivelAtualDe(clienteAtivo);
+    msg.textContent = 'Salvando...';
+    msg.className = 'msg';
+
+    try{
+      let resp;
+      if(nivelSelecionado === nivelAtual){
+        resp = await chamarAPI({ action:'add_status', linha: clienteAtivo.linha, nivel: nivelAtual, texto });
+      } else {
+        resp = await chamarAPI({ action:'advance_level', linha: clienteAtivo.linha, nivelAtual, novoNivel: nivelSelecionado, texto });
+      }
+      if(!resp.ok) throw new Error(resp.erro || 'erro desconhecido');
+      msg.textContent = 'Registrado com sucesso.';
+      msg.className = 'msg ok';
+      await carregarClientes();
+      const idxAtualizado = clientes.findIndex(c => c.linha === clienteAtivo.linha);
+      if(idxAtualizado > -1) abrirModal(idxAtualizado);
+    } catch(err){
+      msg.textContent = 'Erro: ' + err.message;
+      msg.className = 'msg erro';
+    }
+  }
+
+  // ---------- Chamada à API (tudo via GET, inclusive escritas — evita o CORS quebrado do POST no Apps Script) ----------
+  async function chamarAPI(params){
+    const qs = new URLSearchParams(params).toString();
+    const resp = await fetch(`${API_URL}?${qs}`);
+    return resp.json();
+  }
+</script>
+
+</body>
+</html>
